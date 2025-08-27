@@ -1,0 +1,17 @@
+# .coderabbit.yaml
+language: "ko-KR"
+early_access: false
+reviews:
+  profile: "chill"
+  request_changes_workflow: true
+  high_level_summary: true
+  poem: false
+  review_status: true
+  collapse_walkthrough: false
+  auto_review:
+    enabled: true
+    drafts: false
+  allowed_base_branches:
+    - "*" # 모든 브랜치에서 PR 리뷰
+chat:
+  auto_reply: true
