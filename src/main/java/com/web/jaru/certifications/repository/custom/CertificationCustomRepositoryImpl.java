@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class CertificationCustomRepositoryImpl {
+public class CertificationCustomRepositoryImpl { // QueryDsl 적용
 
     private final JPAQueryFactory queryFactory;
 
