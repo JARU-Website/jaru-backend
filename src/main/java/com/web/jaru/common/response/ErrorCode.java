@@ -13,7 +13,11 @@ public enum ErrorCode implements BaseCode {
     INVALID_REQUEST(HttpStatus.BAD_REQUEST, "COMMON-002", "요청 파라미터가 올바르지 않습니다."),
     INVALID_DATE(HttpStatus.BAD_REQUEST, "DATE-001", "유효하지 않은 날짜입니다."),
     INVALID_FORMAT(HttpStatus.BAD_REQUEST, "FORMAT-001", "형식이 올바르지 않습니다."),
-    JSON_PARSE_ERROR(HttpStatus.BAD_REQUEST, "COMMON-003", "JSON 파싱에 실패했습니다.");
+    JSON_PARSE_ERROR(HttpStatus.BAD_REQUEST, "COMMON-003", "JSON 파싱에 실패했습니다."),
+
+    // 자격증 에러
+    CERTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "CERT-001", "해당 자격증이 존재하지 않습니다."),
+    EXIST_USER_SCAP_CERT(HttpStatus.CONFLICT, "CERT-002", "이미 존재하는 자격증 스크랩 정보입니다.");
     private final HttpStatus httpStatus;
     private final String code;
     private final String message;
