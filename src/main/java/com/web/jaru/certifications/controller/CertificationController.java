@@ -5,10 +5,7 @@ import com.web.jaru.common.response.ApiResponse;
 import com.web.jaru.common.response.SuccessCode;
 import com.web.jaru.users.domain.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/cert")
 @RequiredArgsConstructor
@@ -26,5 +23,13 @@ public class CertificationController {
         certificationService.saveScrapInfo(user, certificationId);
         return ApiResponse.onSuccess(null, SuccessCode.CERT_SCRAP_SAVED);
 
+    }
+
+    // 회원-자격증 스크랩 관계 삭제
+    @DeleteMapping("/scrap/{certificationId}")
+    public ApiResponse<Void> deleteScrapInfo(User user,
+                                             @PathVariable(value = "certificationId") Long certificationId) {
+        certificationService.deleteScrapInfo(user, certificationId);
+        return ApiResponse.onSuccess(null, SuccessCode.CERT_SCRAP_DELETED);
     }
 }

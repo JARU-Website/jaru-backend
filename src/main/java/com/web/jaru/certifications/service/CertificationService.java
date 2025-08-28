@@ -32,7 +32,7 @@ public class CertificationService {
 
         // 이미 스크랩한 정보일 경우
         if (userScrapCertRepository.existsByUserAndCertification(user, findCertification)) {
-            throw new CustomException(ErrorCode.EXIST_USER_SCAP_CERT);
+            throw new CustomException(ErrorCode.EXIST_USER_SCRAP_CERT);
         }
 
         UserScrapCert userScrapCert = UserScrapCert.builder()
@@ -41,5 +41,20 @@ public class CertificationService {
                 .build();
 
         userScrapCertRepository.save(userScrapCert);
+    }
+
+    @Transactional
+    public void deleteScrapInfo(User user, Long certificationId) {
+
+        Certification findCertification = certificationRepository.findById(certificationId)
+                .orElseThrow(() -> new CustomException(ErrorCode.CERTIFICATION_NOT_FOUND,
+                        "자격증을 찾을 수 없습니다. id=" + certificationId));
+
+        // 이미 스크랩한 정보일 경우
+        if (!userScrapCertRepository.existsByUserAndCertification(user, findCertification)) {
+            throw new CustomException(ErrorCode.NOT_FOUND_USER_SCRAP_CERT);
+        }
+
+        userScrapCertRepository.deleteByUserAndCertification(user, findCertification);
     }
 }
