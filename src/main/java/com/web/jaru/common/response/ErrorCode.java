@@ -17,8 +17,15 @@ public enum ErrorCode implements BaseCode {
 
     // 자격증 에러
     CERTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "CERT-001", "해당 자격증이 존재하지 않습니다."),
-    EXIST_USER_SCRAP_CERT(HttpStatus.CONFLICT, "CERT-002", "이미 존재하는 자격증 스크랩 정보입니다.")
-    , NOT_FOUND_USER_SCRAP_CERT(HttpStatus.NO_CONTENT, "CERT-003", "존재하지 않는 자격증 스크랩 정보입니다.");
+    EXIST_USER_SCRAP_CERT(HttpStatus.CONFLICT, "CERT-002", "이미 존재하는 자격증 스크랩 정보입니다."),
+    NOT_FOUND_USER_SCRAP_CERT(HttpStatus.NO_CONTENT, "CERT-003", "존재하지 않는 자격증 스크랩 정보입니다."),
+    CERT_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "CERT-004", "존재하지 않는 자격증 카테고리입니다."),
+
+
+    // 커뮤니티 에러
+    POST_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "POST-001", "존재하지 않는 게시글 카테고리입니다.");
+
+
     private final HttpStatus httpStatus;
     private final String code;
     private final String message;
