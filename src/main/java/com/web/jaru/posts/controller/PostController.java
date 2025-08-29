@@ -20,8 +20,28 @@ public class PostController {
     // 게시글 생성
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
-    public ApiResponse<Long> createPost (User user, @Valid @RequestBody PostRequest.Create req) {
+    public ApiResponse<Long> createPost(User user,
+                                         @Valid @RequestBody PostRequest.Create req) {
         Long postId = postService.createPost(user, req);
         return ApiResponse.onSuccess(postId, SuccessCode.CREATED);
+    }
+
+    // 게시글 수정
+    @PatchMapping("/edit/{postId}")
+    public ApiResponse<Void> updatePost(User user,
+                                         @Valid @RequestBody PostRequest.PatchUpdate req,
+                                         @PathVariable("postId") Long postId) {
+        postService.editPost(postId, user, req);
+
+        return ApiResponse.onSuccess(null, SuccessCode.OK);
+    }
+
+    // 게시글 삭제
+    @DeleteMapping("/{postId}")
+    public ApiResponse<Void> deletePost(User user,
+                                        @PathVariable("postId") Long postId) {
+        postService.deletePost(postId, user);
+
+        return ApiResponse.onSuccess(null, SuccessCode.OK);
     }
 }

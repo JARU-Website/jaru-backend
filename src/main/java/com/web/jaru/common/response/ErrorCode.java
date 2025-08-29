@@ -15,6 +15,10 @@ public enum ErrorCode implements BaseCode {
     INVALID_FORMAT(HttpStatus.BAD_REQUEST, "FORMAT-001", "형식이 올바르지 않습니다."),
     JSON_PARSE_ERROR(HttpStatus.BAD_REQUEST, "COMMON-003", "JSON 파싱에 실패했습니다."),
 
+    // 권한/인증 에러
+    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "AUTH-001", "로그인이 필요합니다."),
+    FORBIDDEN(HttpStatus.FORBIDDEN, "AUTH-002", "접근 권한이 없습니다."),
+
     // 자격증 에러
     CERTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "CERT-001", "해당 자격증이 존재하지 않습니다."),
     EXIST_USER_SCRAP_CERT(HttpStatus.CONFLICT, "CERT-002", "이미 존재하는 자격증 스크랩 정보입니다."),
@@ -23,7 +27,8 @@ public enum ErrorCode implements BaseCode {
 
 
     // 커뮤니티 에러
-    POST_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "POST-001", "존재하지 않는 게시글 카테고리입니다.");
+    POST_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "POST-001", "존재하지 않는 게시글 카테고리입니다."),
+    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "POST-002", "존재하지 않는 게시글입니다.");
 
 
     private final HttpStatus httpStatus;
