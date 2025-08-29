@@ -49,8 +49,15 @@ public class Post extends BaseTimeEntity {
     @JoinColumn(name = "cert_category_id") // FK 제약이 없어도 무방, 있으면 그대로 사용
     private CertCategory certCategory;
 
-    private void plusLikeCount() { this.likeCount++; }
+    public void plusLikeCount() { this.likeCount++; }
 
-    private void minusLikeCount() { this.likeCount--; }
+    public void minusLikeCount() { this.likeCount--; }
+
+    // 필드 수정
+    public void changeTitle(String title) { this.title = title; }
+    public void changeContent(String content) { this.content = content; }
+    public void changePostCategory(PostCategory postCategory) { this.postCategory = postCategory; }
+    public void changeCertCategory(CertCategory certCategory) { this.certCategory = certCategory; }
+
 
 }
