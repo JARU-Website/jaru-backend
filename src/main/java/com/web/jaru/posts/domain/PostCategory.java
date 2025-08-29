@@ -18,7 +18,7 @@ public class PostCategory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_category_id")
     private Long id;
-    @Column(nullable=false, length=100)
+    @Column(nullable=false, length=100, unique=true)
     private String name;
 
 }

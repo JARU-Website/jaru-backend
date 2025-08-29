@@ -16,6 +16,6 @@ public class CertCategory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "cert_category_id")
     private Long id;
-    @Column(nullable=false, length=100)
+    @Column(nullable=false, length=100, unique=true)
     private String name;
 }

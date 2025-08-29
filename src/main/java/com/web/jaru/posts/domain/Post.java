@@ -22,6 +22,7 @@ public class Post extends BaseTimeEntity {
     @Column(name = "post_id")
     private Long id;
 
+    @Column(length = 255)
     private String title;
 
     @Column(length = 3000)
@@ -40,7 +41,7 @@ public class Post extends BaseTimeEntity {
     @JoinColumn(name = "user_id")
     private User writer;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "post_category_id") // FK 제약이 없어도 무방, 있으면 그대로 사용
     private PostCategory postCategory;
 
