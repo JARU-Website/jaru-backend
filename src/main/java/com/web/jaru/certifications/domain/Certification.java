@@ -25,7 +25,7 @@ public class Certification {
     private String testOverview; // 시험 개요
     private String fee; // 응시료
     private Short difficulty; // 난이도
-    private String testContents; // 시험 내용
+    private String testContent; // 시험 내용
     private String passingScore; // 합격기준
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true) // category_id NULL 허용

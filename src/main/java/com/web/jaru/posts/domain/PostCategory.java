@@ -1,21 +1,24 @@
-package com.web.jaru.certifications.domain;
+package com.web.jaru.posts.domain;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Entity
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "cert_categories")
-public class CertCategory {
+@Builder
+@Table(name = "posts_categories")
+public class PostCategory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "cert_category_id")
+    @Column(name = "post_category_id")
     private Long id;
     @Column(nullable=false, length=100, unique=true)
     private String name;
+
 }
