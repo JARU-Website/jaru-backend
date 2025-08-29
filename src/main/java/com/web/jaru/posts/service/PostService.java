@@ -88,7 +88,7 @@ public class PostService {
         // 권한 확인
         checkEditPost(loginUser, post);
 
-        postRepository.deleteById(postId);
+        postRepository.delete(post);
     }
 
     private PostCategory getPostCategoryOrThrow(Long postCategoryId) {
