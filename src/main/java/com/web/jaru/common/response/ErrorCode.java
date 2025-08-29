@@ -28,8 +28,9 @@ public enum ErrorCode implements BaseCode {
 
     // 커뮤니티 에러
     POST_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "POST-001", "존재하지 않는 게시글 카테고리입니다."),
-    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "POST-002", "존재하지 않는 게시글입니다.");
-
+    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "POST-002", "존재하지 않는 게시글입니다."),
+    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "COMMENT-001", "존재하지 않는 댓글입니다."),
+    COMMENT_BAD_REQUEST(HttpStatus.BAD_REQUEST, "COMMENT-002", "유효하지 않은 댓글입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
