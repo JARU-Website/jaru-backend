@@ -9,6 +9,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @NoArgsConstructor
@@ -37,6 +39,16 @@ public class Post extends BaseTimeEntity {
     @Builder.Default
     private int commentCount = 0; // 댓글수
 
+    @Builder.Default
+    private boolean isDeleted = false;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "deleted_by_id")
+    private User deletedBy;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private User writer;
@@ -58,6 +70,21 @@ public class Post extends BaseTimeEntity {
     public void changeContent(String content) { this.content = content; }
     public void changePostCategory(PostCategory postCategory) { this.postCategory = postCategory; }
     public void changeCertCategory(CertCategory certCategory) { this.certCategory = certCategory; }
+    public void changeDeletedBy(User deletedBy) { this.deletedBy = deletedBy; }
 
+    /**
+     * 소프트 삭제
+     */
+    public void softDelete() {
+        this.isDeleted = true;
+        this.deletedAt = LocalDateTime.now();
+    }
 
+    /** 소프트 삭제 복구
+     *
+     */
+    public void restore() {
+        this.isDeleted = false;
+        this.deletedAt = null;
+    }
 }
