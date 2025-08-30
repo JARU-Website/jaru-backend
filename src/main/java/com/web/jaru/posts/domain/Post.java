@@ -22,10 +22,10 @@ public class Post extends BaseTimeEntity {
     @Column(name = "post_id")
     private Long id;
 
-    @Column(length = 255)
+    @Column(nullable = false)
     private String title;
 
-    @Column(length = 3000)
+    @Column(nullable = false, length = 3000)
     private String content;
 
     @Builder.Default
@@ -37,15 +37,15 @@ public class Post extends BaseTimeEntity {
     @Builder.Default
     private int commentCount = 0; // 댓글수
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User writer;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "post_category_id") // FK 제약이 없어도 무방, 있으면 그대로 사용
+    @JoinColumn(name = "post_category_id", nullable = false) // FK 제약이 없어도 무방, 있으면 그대로 사용
     private PostCategory postCategory;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = true) // category_id NULL 허용
+    @ManyToOne(fetch = FetchType.LAZY) // category_id NULL 허용
     @JoinColumn(name = "cert_category_id") // FK 제약이 없어도 무방, 있으면 그대로 사용
     private CertCategory certCategory;
 
