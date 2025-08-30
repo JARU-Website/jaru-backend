@@ -56,7 +56,7 @@ public class CommentService {
         // 권한 확인
         checkEditComment(loginUser, findComment);
         // 삭제 여부
-        checkDeletedComment(loginUser, findComment);
+        checkDeletedComment(findComment);
 
         findComment.changeContent(req.content());
     }
@@ -69,7 +69,7 @@ public class CommentService {
         // 권한 확인
         checkEditComment(loginUser, findComment);
         // 삭제 여부
-        checkDeletedComment(loginUser, findComment);
+        checkDeletedComment(findComment);
 
         findComment.softDelete();
 
@@ -95,7 +95,7 @@ public class CommentService {
         }
     }
 
-    private void checkDeletedComment(User user, Comment comment) {
+    private void checkDeletedComment(Comment comment) {
         if (!comment.isDeleted()) {
             throw new CustomException(ErrorCode.COMMENT_BAD_REQUEST);
         }
