@@ -88,7 +88,21 @@ public class PostService {
         // 권한 확인
         checkEditPost(loginUser, post);
 
-        postRepository.delete(post);
+        post.changeDeletedBy(loginUser);
+        post.softDelete();
+    }
+
+    // 게시글 삭제 - 관리자
+    @Transactional
+    public void deletePostByAdmin(Long postId, User loginUser) {
+
+        Post post = getPostOrThrow(postId);
+
+        // 관리자 권한 확인
+        checkIsAdmin(loginUser);
+
+        post.changeDeletedBy(loginUser);
+        post.softDelete();
     }
 
     private PostCategory getPostCategoryOrThrow(Long postCategoryId) {
@@ -108,6 +122,12 @@ public class PostService {
 
     private void checkEditPost(User user, Post post) {
         if (!post.getWriter().getId().equals(user.getId())) {
+            throw new CustomException(ErrorCode.FORBIDDEN);
+        }
+    }
+
+    private void checkIsAdmin(User user) {
+        if (!user.getRole().equals("ADMIN")) {
             throw new CustomException(ErrorCode.FORBIDDEN);
         }
     }
