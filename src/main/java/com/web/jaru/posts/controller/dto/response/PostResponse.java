@@ -10,7 +10,7 @@ public final class PostResponse {
             Long postId,
             String title,
             String postCategoryName,
-            String CertCategoryName,
+            String certCategoryName,
             int commentCount,
             int likeCount,
             int view,
