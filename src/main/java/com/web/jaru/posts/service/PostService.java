@@ -2,15 +2,19 @@ package com.web.jaru.posts.service;
 
 import com.web.jaru.certifications.domain.CertCategory;
 import com.web.jaru.certifications.repository.CertCategoryRepository;
+import com.web.jaru.common.dto.response.PageDto;
 import com.web.jaru.common.exception.CustomException;
 import com.web.jaru.common.response.ErrorCode;
 import com.web.jaru.posts.controller.dto.request.PostRequest;
+import com.web.jaru.posts.controller.dto.response.PostResponse;
 import com.web.jaru.posts.domain.Post;
 import com.web.jaru.posts.domain.PostCategory;
 import com.web.jaru.posts.repository.PostCategoryRepository;
 import com.web.jaru.posts.repository.PostRepository;
 import com.web.jaru.users.domain.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,6 +49,54 @@ public class PostService {
                 .build();
 
         return postRepository.save(post).getId();
+    }
+
+    // 게시글 목록 조회 (최신순)
+    @Transactional(readOnly = true)
+    public PageDto<PostResponse.Summary> findNewest(Long postCategoryId, Long certCategoryId, Pageable pageable) {
+
+        PostCategory postCategory = (postCategoryId != null) ? getPostCategoryOrThrow(postCategoryId) : null;
+        CertCategory  certCategory = (certCategoryId != null) ? getCertCategoryOrThrow(certCategoryId) : null;
+
+        Page<Post> page = postRepository.findNewest(postCategoryId, certCategoryId, pageable);
+
+        Page<PostResponse.Summary> mapped = page.map(p -> {
+            String postCategoryName = (postCategory != null)
+                    ? postCategory.getName()
+                    : (p.getPostCategory() != null ? p.getPostCategory().getName() : null);
+
+            String certCategoryName = (certCategory != null)
+                    ? certCategory.getName()
+                    : (p.getCertCategory() != null ? p.getCertCategory().getName() : null);
+
+            return toSummary(p, postCategoryName, certCategoryName);
+        });
+
+        return PageDto.of(mapped);
+    }
+
+
+    // 게시글 목록 조회 (추천순)
+    public PageDto<PostResponse.Summary> findMostLiked(Long postCategoryId, Long certCategoryId, Pageable pageable) {
+
+        PostCategory postCategory = (postCategoryId != null) ? getPostCategoryOrThrow(postCategoryId) : null;
+        CertCategory  certCategory = (certCategoryId != null) ? getCertCategoryOrThrow(certCategoryId) : null;
+
+        Page<Post> page = postRepository.findMostLiked(postCategoryId, certCategoryId, pageable);
+
+        Page<PostResponse.Summary> mapped = page.map(p -> {
+            String postCategoryName = (postCategory != null)
+                    ? postCategory.getName()
+                    : (p.getPostCategory() != null ? p.getPostCategory().getName() : null);
+
+            String certCategoryName = (certCategory != null)
+                    ? certCategory.getName()
+                    : (p.getCertCategory() != null ? p.getCertCategory().getName() : null);
+
+            return toSummary(p, postCategoryName, certCategoryName);
+        });
+
+        return PageDto.of(mapped);
     }
 
     // 게시글 수정
@@ -105,6 +157,7 @@ public class PostService {
         post.softDelete();
     }
 
+    /* --- 예외 처리 --- */
     private PostCategory getPostCategoryOrThrow(Long postCategoryId) {
         return postCategoryRepository.findById(postCategoryId)
                 .orElseThrow(() -> new CustomException(ErrorCode.POST_CATEGORY_NOT_FOUND));
@@ -131,4 +184,20 @@ public class PostService {
             throw new CustomException(ErrorCode.FORBIDDEN);
         }
     }
+
+    /* --- 엔티티 → 응답 DTO 매핑 --- */
+    private PostResponse.Summary toSummary(Post post, String postCategoryName, String certCategoryName) {
+        return new PostResponse.Summary(
+                post.getId(),
+                post.getTitle(),
+                postCategoryName,
+                certCategoryName,
+                post.getCommentCount(),
+                post.getLikeCount(),
+                post.getView(),
+                post.getWriter().getNickname(),
+                post.getCreatedDate()
+        );
+    }
+
 }
