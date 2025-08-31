@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Size;
 
 public final class PostRequest {
 
-    private PostRequest() { }
+    private PostRequest() {}
 
     // 게시글 생성
     public record Create(
