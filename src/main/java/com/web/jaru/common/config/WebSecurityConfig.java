@@ -1,5 +1,11 @@
 package com.web.jaru.common.config;
 
+import com.web.jaru.common.resolver.CurrentUserArgumentResolver;
+import com.web.jaru.security.handler.CustomAccessDeniedHandler;
+import com.web.jaru.security.handler.CustomAuthenticationEntryPoint;
+import com.web.jaru.security.filter.JwtExceptionFilter;
+import com.web.jaru.security.filter.JwtFilter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -9,15 +15,31 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-public class WebSecurityConfig {
+@RequiredArgsConstructor
+public class WebSecurityConfig implements WebMvcConfigurer {
+
+
+    private final CurrentUserArgumentResolver currentUserArgumentResolver;
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+        resolvers.add(currentUserArgumentResolver);
+    }
+
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    private final JwtFilter jwtAuthenticationFilter;
+    private final JwtExceptionFilter jwtExceptionFilter;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
     // 비밀번호 암호화용 빈
     @Bean
@@ -25,32 +47,29 @@ public class WebSecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    // Spring Security 필터 체인 구성
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                // CSRF 보호 비활성화 (API 개발 시 보통 disable)
-                .csrf(csrf -> csrf.disable())
-
-                // CORS 기본 설정
-                .cors(Customizer.withDefaults())
-
-                // 세션을 사용하지 않음 (JWT 등 stateless 방식에 적합)
+        http.csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint(customAuthenticationEntryPoint)
+                        .accessDeniedHandler(customAccessDeniedHandler))
+                .cors(Customizer.withDefaults())
                 // 요청 URL에 따른 권한 설정
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/",
+                                "/api/auth/**",
                                 "/api/public/**",
                                 "/swagger-ui/**",
                                 "/swagger-resources/**",
                                 "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/api/**").authenticated()
                         .anyRequest().authenticated()
-                )
+                );
 
-                // 기본 로그인/로그아웃 기능 사용 (필요 시 삭제)
-                .httpBasic(Customizer.withDefaults());
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtExceptionFilter, JwtFilter.class);
 
         return http.build();
     }
@@ -59,7 +78,7 @@ public class WebSecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
-        configuration.addAllowedOrigin("*");
+        configuration.setAllowedOrigins(List.of("http://localhost:8080"));
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("Authorization");
