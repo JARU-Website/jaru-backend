@@ -5,6 +5,7 @@ import com.web.jaru.common.response.ApiResponse;
 import com.web.jaru.common.response.SuccessCode;
 import com.web.jaru.posts.controller.dto.request.CommentRequest;
 import com.web.jaru.posts.controller.dto.request.PostRequest;
+import com.web.jaru.posts.controller.dto.response.CommentResponse;
 import com.web.jaru.posts.controller.dto.response.PostResponse;
 import com.web.jaru.posts.service.PostService;
 import com.web.jaru.posts_comments.service.CommentService;
@@ -33,14 +34,14 @@ public class PostController {
         return ApiResponse.onSuccess(postId, SuccessCode.CREATED);
     }
 
-    // 게시글 목록 조회(최신순)
+    // 게시글 목록 조회 (최신순)
     @GetMapping("/list/{postCategoryId}/{certCategoryId}")
     public ApiResponse<PageDto<PostResponse.Summary>> findNewestPostList(@PathVariable("postCategoryId") Long postCategoryId, @PathVariable(name = "certCategoryId", required = false) Long certCategoryId,
                                                                          @PageableDefault(page = 0, size = 10)  Pageable pageable) {
         return ApiResponse.onSuccess(postService.findNewest(postCategoryId, certCategoryId, pageable), SuccessCode.OK);
     }
 
-    // 게시글 목록 조회(추천순)
+    // 게시글 목록 조회 (추천순)
     @GetMapping("/list/{postCategoryId}/{certCategoryId}")
     public ApiResponse<PageDto<PostResponse.Summary>> findMostLikedPostList(@PathVariable("postCategoryId") Long postCategoryId, @PathVariable(name = "certCategoryId", required = false) Long certCategoryId,
                                                                             @PageableDefault(page = 0, size = 10)  Pageable pageable) {
@@ -73,16 +74,24 @@ public class PostController {
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<Long> createComment(User user,
                                     @Valid @RequestBody CommentRequest.Create req,
-                                    @PathVariable Long postId) {
+                                    @PathVariable(name = "postId") Long postId) {
 
         Long commentId = commentService.createComment(postId, user, req);
         return ApiResponse.onSuccess(commentId, SuccessCode.CREATED);
     }
 
+    // 댓글 목록 조회
+    @GetMapping("/{postId}/comments")
+    public ApiResponse<PageDto<CommentResponse.CommentThread>> getCommentList(User user,
+                                                                              @PathVariable(name = "postId") Long postId,
+                                                                              @PageableDefault(page = 0, size = 10)  Pageable pageable) {
+        return ApiResponse.onSuccess(commentService.findCommentList(postId, user, pageable), SuccessCode.OK);
+    }
+
     // 댓글 수정
     @PatchMapping("/comments/{commentId}")
     public ApiResponse<Void> updateComment(User user,
-                                           @PathVariable Long commentId,
+                                           @PathVariable(name = "commentId") Long commentId,
                                            @Valid @RequestBody CommentRequest.Update req) {
         commentService.updateComment(commentId, user, req);
         return ApiResponse.onSuccess(null, SuccessCode.OK);
@@ -91,7 +100,7 @@ public class PostController {
     // 댓글 삭제(소프트 삭제)
     @DeleteMapping("/comments/{commentId}")
     public ApiResponse<Void> deleteComment(User user,
-                                           @PathVariable Long commentId) {
+                                           @PathVariable(name = "commentId") Long commentId) {
         commentService.deleteComment(commentId, user);
         return ApiResponse.onSuccess(null, SuccessCode.OK);
     }
