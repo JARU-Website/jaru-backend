@@ -99,8 +99,6 @@ public class PostService {
         return PageDto.of(mapped);
     }
 
-    // 게시글 상세 조회
-
     // 게시글 수정
     @Transactional
     public void editPost(Long postId, User loginUser, PostRequest.PatchUpdate req) {
