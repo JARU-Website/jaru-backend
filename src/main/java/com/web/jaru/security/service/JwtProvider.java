@@ -24,8 +24,7 @@ public class JwtProvider {
     private String secretKey;
 
     private Key key;
-//    private final long ACCESS_EXP = 1000L * 60 * 60;        // 1시간
-    private final long ACCESS_EXP = 1000L * 10;
+   private final long ACCESS_EXP = 1000L * 60 * 60;        // 1시간
     private final long REFRESH_EXP = 1000L * 60 * 60 * 24 * 3; // 3일
 
     @PostConstruct

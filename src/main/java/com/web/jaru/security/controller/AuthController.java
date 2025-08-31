@@ -25,7 +25,7 @@ public class AuthController {
     private final OAuthService authService;
 
     /**
-     * 구글 로그인 (회원가입 + 로그인 통합)
+     * 구글 로그인
      */
     @PostMapping("/google/login")
     @Operation(summary = "구글 로그인", description = "구글 인가 코드를 받아 로그인/회원가입을 처리합니다.")

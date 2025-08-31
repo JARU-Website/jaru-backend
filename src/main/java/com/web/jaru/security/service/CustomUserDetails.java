@@ -36,7 +36,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return user.getEmail(); // 인증 아이디는 이메일 기준
+        return user.getEmail();
     }
 
     @Override
