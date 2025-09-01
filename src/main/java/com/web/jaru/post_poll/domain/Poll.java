@@ -1,4 +1,4 @@
-package com.web.jaru.post_poll;
+package com.web.jaru.post_poll.domain;
 
 import com.web.jaru.BaseTimeEntity;
 import com.web.jaru.posts.domain.Post;
@@ -7,6 +7,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -33,8 +36,16 @@ public class Poll extends BaseTimeEntity {
     private Post post;
 
     @OneToMany(mappedBy="poll", cascade=CascadeType.ALL, orphanRemoval=true)
-    @OrderBy("idx ASC")
+    @OrderColumn(name = "idx")
+    @Builder.Default
     private List<PollOption> options = new ArrayList<>();
 
+    /* --- 연관관계 메서드 --- */
+    public void setPost(Post post) { this.post = post; }
+
+    public void addOption(PollOption option) {
+        options.add(option);
+        option.setPoll(this);
+    }
 
 }
