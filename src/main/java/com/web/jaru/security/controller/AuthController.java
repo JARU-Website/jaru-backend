@@ -54,7 +54,7 @@ public class AuthController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "UNAUTHORIZED_USER - 인증되지 않은 사용자")
     })
     public ApiResponse<Void> logout(HttpServletResponse response, @CurrentUser CustomUserDetails userDetails) {
-        authService.logout(userDetails.getUser().getId());
+        authService.logout(userDetails.getUser().getId(), response);
         return ApiResponse.onSuccess(null, SuccessCode.OK);
     }
 

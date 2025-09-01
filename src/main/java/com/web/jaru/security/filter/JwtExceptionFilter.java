@@ -23,9 +23,11 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
             HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
         try {
-            chain.doFilter(request, response); // JwtAuthenticationFilter로 이동
-        }catch (JwtException | CustomException ex) {
+            chain.doFilter(request, response);
+        }catch (JwtException ex) {
             setErrorResponse(request, response, ex);
+        } catch (CustomException ex) {
+            throw ex;
         }
     }
 
@@ -45,7 +47,7 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
         if (ex instanceof io.jsonwebtoken.ExpiredJwtException) {
             code = "TOKEN_EXPIRED";
             detail = "토큰이 만료되었습니다.";
-        } else if (ex instanceof io.jsonwebtoken.SignatureException) {
+        } else if (ex instanceof io.jsonwebtoken.security.SignatureException) {
             code = "TOKEN_SIGNATURE_INVALID";
             detail = "토큰 서명이 유효하지 않습니다.";
         } else if (ex instanceof io.jsonwebtoken.MalformedJwtException) {

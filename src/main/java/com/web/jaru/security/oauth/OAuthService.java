@@ -190,11 +190,21 @@ public class OAuthService {
      * - 현재 로그인한 사용자의 RefreshToken 삭제
      * - SecurityContext 초기화
      */
-    public void logout(Long userId) {
+    public void logout(Long userId, HttpServletResponse response) {
         try {
             tokenRedisRepository.deleteByUserId(userId);
             log.info("[LOGOUT] userId={} 의 RefreshToken 삭제 완료", userId);
-
+            Duration zero = Duration.ZERO;
+            ResponseCookie expired = ResponseCookie.from("accessToken", "")
+                            .httpOnly(true)
+//                          .secure(true)
+                            .secure(false)
+                            .sameSite("Lax")
+//                          .sameSite("None")
+                            .path("/")
+                            .maxAge(zero)
+                            .build();
+            response.addHeader(HttpHeaders.SET_COOKIE,expired.toString());
             SecurityContextHolder.clearContext();
         } catch (Exception e) {
             log.error("[LOGOUT] 로그아웃 처리 실패 userId={}", userId, e);

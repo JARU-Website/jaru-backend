@@ -79,6 +79,10 @@ public class JwtFilter extends OncePerRequestFilter {
                         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
                         log.info("[TOKEN] 토큰 만료, 새로운 토큰 발급 ={}", newAccessToken);
                         setAuthentication(newAccessToken);
+                    } else {
+                        // 리프레시 토큰 무효 처리
+                        clearAccessTokenCookie(response);
+                        log.warn("[TOKEN] 리프레시 토큰 무효. accessToken 쿠키 삭제됨");
                     }
                 });
             }
@@ -117,4 +121,15 @@ public class JwtFilter extends OncePerRequestFilter {
         SecurityContextHolder.getContext().setAuthentication(auth);
     }
 
+    // accessToken 쿠키 즉시 삭제
+    private void clearAccessTokenCookie(HttpServletResponse response) {
+        ResponseCookie expiredCookie = ResponseCookie.from("accessToken", "")
+                .httpOnly(true)
+                .secure(false) // 운영 환경에서는 true
+                .sameSite("Lax") // 운영 환경에서는 None
+                .path("/")
+                .maxAge(0)
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, expiredCookie.toString());
+    }
 }

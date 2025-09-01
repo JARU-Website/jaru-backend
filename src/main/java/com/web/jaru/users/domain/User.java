@@ -29,10 +29,12 @@ public class User extends BaseTimeEntity {
     private String nickname;
 
     @Column(length = 20)
-    private String role = "USER";   // USER / ADMIN
+    private String role = "USER";
 
     @Enumerated(EnumType.STRING)
-    private Status status;
+    @Builder.Default
+    @Column(nullable = false)
+    private Status status = Status.ACTIVE;
 
     @Column(length = 30)
     private String authProvider;
