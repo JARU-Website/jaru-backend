@@ -175,7 +175,7 @@ public class OAuthService {
                 .maxAge(Duration.ofHours(1))
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-        log.info("[LOGIN] 토큰 저장 성공 accessToken={}", accessToken);
+        log.info("[LOGIN] 토큰 저장 성공 userId={}", user.getId());
         // 6. 로그인 결과 반환 DTO
         return UserDTO.UserResponseDTO.builder()
                 .id(user.getId())
@@ -192,7 +192,7 @@ public class OAuthService {
      */
     public void logout(Long userId, HttpServletResponse response) {
         try {
-            tokenRedisRepository.deleteByUserId(userId);
+            tokenRedisRepository.deleteById(userId);
             log.info("[LOGOUT] userId={} 의 RefreshToken 삭제 완료", userId);
             Duration zero = Duration.ZERO;
             ResponseCookie expired = ResponseCookie.from("accessToken", "")

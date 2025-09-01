@@ -53,7 +53,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 tokenRedisRepository.findByAccessToken(accessToken).ifPresent(tokenRedis -> {
                     String refreshToken = tokenRedis.getRefreshToken();
                     if (jwtProvider.validateToken(refreshToken)) {
-                        // 리프레시 토큰 유효할 시  새 액세스 토큰 발급
+                        // 리프레시 토큰 유효할 시 새 액세스 토큰 발급
                         User user = userRepository.findById(tokenRedis.getId())
                                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
