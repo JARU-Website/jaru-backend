@@ -15,23 +15,26 @@ public enum ErrorCode implements BaseCode {
     INVALID_FORMAT(HttpStatus.BAD_REQUEST, "FORMAT-001", "형식이 올바르지 않습니다."),
     JSON_PARSE_ERROR(HttpStatus.BAD_REQUEST, "COMMON-003", "JSON 파싱에 실패했습니다."),
 
-    // 권한/인증 에러
-    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "AUTH-001", "로그인이 필요합니다."),
-    FORBIDDEN(HttpStatus.FORBIDDEN, "AUTH-002", "접근 권한이 없습니다."),
-
     // 자격증 에러
     CERTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "CERT-001", "해당 자격증이 존재하지 않습니다."),
     EXIST_USER_SCRAP_CERT(HttpStatus.CONFLICT, "CERT-002", "이미 존재하는 자격증 스크랩 정보입니다."),
-    NOT_FOUND_USER_SCRAP_CERT(HttpStatus.NOT_FOUND, "CERT-003", "존재하지 않는 자격증 스크랩 정보입니다."),
-    CERT_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "CERT-004", "존재하지 않는 자격증 카테고리입니다."),
-
+    NOT_FOUND_USER_SCRAP_CERT(HttpStatus.NO_CONTENT, "CERT-003", "존재하지 않는 자격증 스크랩 정보입니다."),
 
     // 커뮤니티 에러
     POST_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "POST-001", "존재하지 않는 게시글 카테고리입니다."),
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "POST-002", "존재하지 않는 게시글입니다."),
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "COMMENT-001", "존재하지 않는 댓글입니다."),
-    COMMENT_BAD_REQUEST(HttpStatus.BAD_REQUEST, "COMMENT-002", "유효하지 않은 댓글입니다.");
-
+    COMMENT_BAD_REQUEST(HttpStatus.BAD_REQUEST, "COMMENT-002", "유효하지 않은 댓글입니다."),
+    
+    // 사용자 관련
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "ACCOUNT404", "사용자를 찾을 수 없습니다."),
+    USER_INACTIVE(HttpStatus.FORBIDDEN,"ACCOUNT403", "탈퇴한 사용자입니다."),
+    TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "ACCOUNT401", "토큰이 만료되었습니다."),
+    REFRESH_TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, "ACCOUNT404","리프레시 토큰을 찾을 수 없습니다."),
+    REFRESH_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "ACCOUNT401","리프레시 토큰이 만료되었습니다."),
+    REFRESH_TOKEN_INVALID(HttpStatus.BAD_REQUEST, "ACCOUNT400","리프레시 토큰이 유효하지 않습니다."),
+    INVALID_OAUTH_TOKEN(HttpStatus.BAD_REQUEST, "ACCOUNT400", "유효하지 않는 카카오/구글/네이버 토큰입니다." ),
+    UNAUTHORIZED_USER(HttpStatus.UNAUTHORIZED,"ACCOUNT401" ,"인증된 사용자가 없습니다." );
     private final HttpStatus httpStatus;
     private final String code;
     private final String message;
