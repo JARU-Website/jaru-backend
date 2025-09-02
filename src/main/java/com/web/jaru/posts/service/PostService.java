@@ -64,7 +64,6 @@ public class PostService {
     }
 
     // 게시글 목록 조회 (최신순)
-    @Transactional(readOnly = true)
     public PageDto<PostResponse.Summary> findNewest(Long postCategoryId, Long certCategoryId, Pageable pageable) {
 
         PostCategory postCategory = (postCategoryId != null) ? getPostCategoryOrThrow(postCategoryId) : null;
