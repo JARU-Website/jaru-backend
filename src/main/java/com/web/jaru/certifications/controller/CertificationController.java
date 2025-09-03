@@ -14,6 +14,10 @@ public class CertificationController {
 
     private final CertificationService certificationService;
 
+    // 자격증 조회
+
+
+
     // ======== 회원의 자격증 스크랩 =======
 
     // 회원-자격증 스크랩 관계 등록

@@ -45,4 +45,11 @@ public class User extends BaseTimeEntity {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
+    @Column(name = "is_notified")
+    private boolean isNotified = false;
+
+    @Column(name = "is_googlecal_connected")
+    private boolean isGoogleCalConnected = false;
+
+
 }
