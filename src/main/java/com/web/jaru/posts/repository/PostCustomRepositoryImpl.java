@@ -24,6 +24,7 @@ public class PostCustomRepositoryImpl implements PostCustomRepository{
         // 게시글 목록
         List<Post> postList = queryFactory
                 .selectFrom(post)
+                .leftJoin(post.writer, user).fetchJoin()
                 .where(
                         notDeleted(),
                         eqIfPresent(post.postCategory.id, postCategoryId),

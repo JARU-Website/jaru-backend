@@ -71,7 +71,7 @@ public class PostService {
 
         Page<Post> page = postRepository.findNewest(postCategoryId, certCategoryId, pageable);
 
-        Page<PostResponse.Summary> mapped = page.map(p -> {
+        Page<PostResponse.Summary> result = page.map(p -> {
             String postCategoryName = (postCategory != null)
                     ? postCategory.getName()
                     : (p.getPostCategory() != null ? p.getPostCategory().getName() : null);
@@ -83,7 +83,7 @@ public class PostService {
             return toSummary(p, postCategoryName, certCategoryName);
         });
 
-        return PageDto.of(mapped);
+        return PageDto.of(result);
     }
 
 
@@ -95,7 +95,7 @@ public class PostService {
 
         Page<Post> page = postRepository.findMostLiked(postCategoryId, certCategoryId, pageable);
 
-        Page<PostResponse.Summary> mapped = page.map(p -> {
+        Page<PostResponse.Summary> result = page.map(p -> {
             String postCategoryName = (postCategory != null)
                     ? postCategory.getName()
                     : (p.getPostCategory() != null ? p.getPostCategory().getName() : null);
@@ -107,7 +107,7 @@ public class PostService {
             return toSummary(p, postCategoryName, certCategoryName);
         });
 
-        return PageDto.of(mapped);
+        return PageDto.of(result);
     }
 
     // 게시글 수정
