@@ -186,13 +186,13 @@ public class PostService {
 
     private void checkEditPost(User user, Post post) {
         if (!post.getWriter().getId().equals(user.getId())) {
-            throw new CustomException(ErrorCode.FORBIDDEN);
+            throw new CustomException(ErrorCode.PERMISSION_DENIED);
         }
     }
 
     private void checkIsAdmin(User user) {
         if (!user.getRole().equals("ADMIN")) {
-            throw new CustomException(ErrorCode.FORBIDDEN);
+            throw new CustomException(ErrorCode.PERMISSION_DENIED);
         }
     }
 
