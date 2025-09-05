@@ -25,17 +25,16 @@ public class User extends BaseTimeEntity {
     @Column(length = 15)
     private String phoneNum;
 
-    @Column(length = 255) // 해시된 비밀번호 저장
-    private String password;
-
     @Column(length = 50)
     private String nickname;
 
     @Column(length = 20)
-    private String role = "USER";   // USER / ADMIN
+    private String role = "USER";
 
-    @Column(length = 20)
-    private String status = "ACTIVE";  // ACTIVE / INACTIVE / BANNED
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    @Column(nullable = false)
+    private Status status = Status.ACTIVE;
 
     @Column(length = 30)
     private String authProvider;

@@ -39,13 +39,11 @@ public class QUser extends EntityPathBase<User> {
 
     public final StringPath nickname = createString("nickname");
 
-    public final StringPath password = createString("password");
-
     public final StringPath phoneNum = createString("phoneNum");
 
     public final StringPath role = createString("role");
 
-    public final StringPath status = createString("status");
+    public final EnumPath<Status> status = createEnum("status", Status.class);
 
     public QUser(String variable) {
         super(User.class, forVariable(variable));
