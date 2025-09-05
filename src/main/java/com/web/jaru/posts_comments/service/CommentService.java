@@ -139,12 +139,12 @@ public class CommentService {
 
     private void checkEditComment(User user, Comment comment) {
         if (!comment.getWriter().getId().equals(user.getId())) {
-            throw new CustomException(ErrorCode.FORBIDDEN);
+            throw new CustomException(ErrorCode.PERMISSION_DENIED);
         }
     }
 
     private void checkDeletedComment(Comment comment) {
-        if (!comment.isDeleted()) {
+        if (comment.isDeleted()) {
             throw new CustomException(ErrorCode.COMMENT_BAD_REQUEST);
         }
     }
