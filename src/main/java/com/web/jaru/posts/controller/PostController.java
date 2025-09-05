@@ -8,12 +8,14 @@ import com.web.jaru.posts.controller.dto.request.PostRequest;
 import com.web.jaru.posts.controller.dto.response.PostResponse;
 import com.web.jaru.posts.service.PostService;
 import com.web.jaru.posts_comments.service.CommentService;
+import com.web.jaru.security.service.CustomUserDetails;
 import com.web.jaru.users.domain.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/api/posts")
@@ -35,25 +37,32 @@ public class PostController {
 
     // 게시글 목록 조회(최신순)
     @GetMapping("/list")
-    public ApiResponse<PageDto<PostResponse.Summary>> findNewestPostList(@RequestParam(name = "postCategoryId") Long postCategoryId, @RequestParam(name = "certCategoryId", required = false) Long certCategoryId,
+    public ApiResponse<PageDto<PostResponse.Summary>> getNewestPostList(@RequestParam(name = "postCategoryId") Long postCategoryId, @RequestParam(name = "certCategoryId", required = false) Long certCategoryId,
                                                                          @PageableDefault(page = 0, size = 10)  Pageable pageable) {
         return ApiResponse.onSuccess(postService.findNewest(postCategoryId, certCategoryId, pageable), SuccessCode.OK);
     }
 
     // 게시글 목록 조회(추천순)
     @GetMapping("/list")
-    public ApiResponse<PageDto<PostResponse.Summary>> findMostLikedPostList(@RequestParam(name = "postCategoryId") Long postCategoryId, @RequestParam(name = "certCategoryId", required = false) Long certCategoryId,
+    public ApiResponse<PageDto<PostResponse.Summary>> getMostLikedPostList(@RequestParam(name = "postCategoryId") Long postCategoryId, @RequestParam(name = "certCategoryId", required = false) Long certCategoryId,
                                                                             @PageableDefault(page = 0, size = 10)  Pageable pageable) {
-        return ApiResponse.onSuccess(postService.findNewest(postCategoryId, certCategoryId, pageable), SuccessCode.OK);
+        return ApiResponse.onSuccess(postService.findMostLiked(postCategoryId, certCategoryId, pageable), SuccessCode.OK);
     }
 
     // 게시글 상세 조회
+    @GetMapping("/{postId}")
+    public ApiResponse<PostResponse.Post> getPost(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                  @PathVariable("postId") Long postId) {
+
+        return ApiResponse.onSuccess(postService.findPost(postId, userDetails.getUser()), SuccessCode.OK);
+    }
 
     // 게시글 수정
     @PatchMapping("/edit/{postId}")
     public ApiResponse<Void> updatePost(User user,
                                          @Valid @RequestBody PostRequest.PatchUpdate req,
                                          @PathVariable("postId") Long postId) {
+
         postService.editPost(postId, user, req);
         return ApiResponse.onSuccess(null, SuccessCode.OK);
     }
@@ -62,6 +71,7 @@ public class PostController {
     @DeleteMapping("/{postId}")
     public ApiResponse<Void> deletePost(User user,
                                         @PathVariable("postId") Long postId) {
+
         postService.deletePost(postId, user);
         return ApiResponse.onSuccess(null, SuccessCode.OK);
     }
@@ -84,6 +94,7 @@ public class PostController {
     public ApiResponse<Void> updateComment(User user,
                                            @PathVariable Long commentId,
                                            @Valid @RequestBody CommentRequest.Update req) {
+
         commentService.updateComment(commentId, user, req);
         return ApiResponse.onSuccess(null, SuccessCode.OK);
     }
@@ -92,6 +103,7 @@ public class PostController {
     @DeleteMapping("/comments/{commentId}")
     public ApiResponse<Void> deleteComment(User user,
                                            @PathVariable Long commentId) {
+        
         commentService.deleteComment(commentId, user);
         return ApiResponse.onSuccess(null, SuccessCode.OK);
     }
