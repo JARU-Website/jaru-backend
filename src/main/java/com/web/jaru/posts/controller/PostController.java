@@ -35,14 +35,14 @@ public class PostController {
     }
 
     // 게시글 목록 조회(최신순)
-    @GetMapping("/list")
+    @GetMapping("/list/newest")
     public ApiResponse<PageDto<PostResponse.Summary>> findNewestPostList(@RequestParam(name = "postCategoryId") Long postCategoryId, @RequestParam(name = "certCategoryId", required = false) Long certCategoryId,
                                                                          @PageableDefault(page = 0, size = 10)  Pageable pageable) {
         return ApiResponse.onSuccess(postService.findNewest(postCategoryId, certCategoryId, pageable), SuccessCode.OK);
     }
 
     // 게시글 목록 조회(추천순)
-    @GetMapping("/list")
+    @GetMapping("/list/most-liked")
     public ApiResponse<PageDto<PostResponse.Summary>> findMostLikedPostList(@RequestParam(name = "postCategoryId") Long postCategoryId, @RequestParam(name = "certCategoryId", required = false) Long certCategoryId,
                                                                             @PageableDefault(page = 0, size = 10)  Pageable pageable) {
         return ApiResponse.onSuccess(postService.findNewest(postCategoryId, certCategoryId, pageable), SuccessCode.OK);
