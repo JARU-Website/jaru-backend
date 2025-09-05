@@ -34,16 +34,16 @@ public class PostController {
         return ApiResponse.onSuccess(postId, SuccessCode.CREATED);
     }
 
-    // 게시글 목록 조회 (최신순)
-    @GetMapping("/list/{postCategoryId}/{certCategoryId}")
-    public ApiResponse<PageDto<PostResponse.Summary>> findNewestPostList(@PathVariable("postCategoryId") Long postCategoryId, @PathVariable(name = "certCategoryId", required = false) Long certCategoryId,
+    // 게시글 목록 조회(최신순)
+    @GetMapping("/list")
+    public ApiResponse<PageDto<PostResponse.Summary>> findNewestPostList(@RequestParam(name = "postCategoryId") Long postCategoryId, @RequestParam(name = "certCategoryId", required = false) Long certCategoryId,
                                                                          @PageableDefault(page = 0, size = 10)  Pageable pageable) {
         return ApiResponse.onSuccess(postService.findNewest(postCategoryId, certCategoryId, pageable), SuccessCode.OK);
     }
 
-    // 게시글 목록 조회 (추천순)
-    @GetMapping("/list/{postCategoryId}/{certCategoryId}")
-    public ApiResponse<PageDto<PostResponse.Summary>> findMostLikedPostList(@PathVariable("postCategoryId") Long postCategoryId, @PathVariable(name = "certCategoryId", required = false) Long certCategoryId,
+    // 게시글 목록 조회(추천순)
+    @GetMapping("/list")
+    public ApiResponse<PageDto<PostResponse.Summary>> findMostLikedPostList(@RequestParam(name = "postCategoryId") Long postCategoryId, @RequestParam(name = "certCategoryId", required = false) Long certCategoryId,
                                                                             @PageableDefault(page = 0, size = 10)  Pageable pageable) {
         return ApiResponse.onSuccess(postService.findNewest(postCategoryId, certCategoryId, pageable), SuccessCode.OK);
     }

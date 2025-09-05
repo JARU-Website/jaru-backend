@@ -16,11 +16,11 @@ public record PageDto<T>(
         boolean hasNext,
         boolean hasPrevious
 ) {
-    // Page<T> 그대로 래핑
+    // Page<T> 래핑
     public static <T> PageDto<T> of(Page<T> page) {
         return new PageDto<>(
                 page.getContent(),
-                page.getNumber(),
+                page.getNumber()+1,
                 page.getSize(),
                 page.getTotalElements(),
                 page.getTotalPages(),
@@ -36,7 +36,7 @@ public record PageDto<T>(
         List<T> content = page.getContent().stream().map(mapper).toList();
         return new PageDto<>(
                 content,
-                page.getNumber(),
+                page.getNumber()+1,
                 page.getSize(),
                 page.getTotalElements(),
                 page.getTotalPages(),
