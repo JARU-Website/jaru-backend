@@ -1,6 +1,7 @@
 package com.web.jaru.posts.controller.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.web.jaru.post_poll.dto.request.PollRequest;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -15,7 +16,8 @@ public final class PostRequest {
             @NotBlank @Size(max = 255) String title,
             @NotBlank @Size(max = 3000) String content,
             @NotNull @Positive Long postCategoryId,
-            @Positive Long certCategoryId
+            @Positive Long certCategoryId,
+            PollRequest.Create poll
     ) { }
 
     // 게시글 수정
