@@ -9,25 +9,22 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+@Entity
+@Builder
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Builder
 @Table(name = "certification_schedule")
 public class CertSchedule extends BaseTimeEntity {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "certification_schedule_id")
     private Long id;
 
-    @JoinColumn(name = "certification_id")
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "certification_id")
     private Certification certification;
-
-    @Column(name = "schedule_type")
-    @Enumerated(EnumType.STRING)
-    private ScheduleType scheduleType;
 
     @Column(name = "apply_from", nullable = false)
     private LocalDate applyFrom;
@@ -43,5 +40,4 @@ public class CertSchedule extends BaseTimeEntity {
 
     @Column(name = "result_date")
     private LocalDate resultDate;
-
 }

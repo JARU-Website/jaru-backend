@@ -1,11 +1,12 @@
 package com.web.jaru.certifications.repository;
 
 import com.web.jaru.certifications.domain.Certification;
+import com.web.jaru.certifications.repository.custom.CertificationCustomRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface CertificationRepository extends JpaRepository<Certification, Long> {
+public interface CertificationRepository extends JpaRepository<Certification, Long>  {
 
     Optional<Certification> findById(Long id);
 

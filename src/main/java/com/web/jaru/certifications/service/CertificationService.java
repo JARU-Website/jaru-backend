@@ -1,6 +1,10 @@
 package com.web.jaru.certifications.service;
 
+import com.web.jaru.certifications.domain.CertSchedule;
 import com.web.jaru.certifications.domain.Certification;
+import com.web.jaru.certifications.dto.CertDTO;
+import com.web.jaru.certifications.dto.CertScheduleDTO;
+import com.web.jaru.certifications.repository.CertScheduleRepository;
 import com.web.jaru.certifications.repository.CertificationRepository;
 import com.web.jaru.certifications.repository.custom.CertificationCustomRepositoryImpl;
 import com.web.jaru.common.exception.CustomException;
@@ -12,6 +16,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.YearMonth;
+import java.util.List;
+
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service
@@ -21,14 +28,19 @@ public class CertificationService {
     // 자격증 스크랩
     private final UserScrapCertRepository userScrapCertRepository;
 
+    private final CertScheduleRepository certScheduleRepository;
+
     // ================= MY 자격증 조회 ==================
     // 월별 내 자격증 조회
-    @Transactional
+//    @Transactional
+//    List<CertScheduleDTO> viewMyMonthlyCert(User user, YearMonth yearMonth){
+//        certScheduleRepository.findByUserAnd
+//    }
 
     // 선택한 기간 내의 자격증 조회하기
     // 자격증 알림 설정하기
     // 자격증 알림 취소하기
-    // 월별 알림설정한 일정만 보기 
+    // 월별 알림설정한 일정만 보기
     // 구글 캘린더 연동(로그인 시 구글 토큰 db에 저장하는걸로 추가하기? or redis에 추가하기)
     // 구글 캘린더 연동 취소
 
@@ -41,7 +53,9 @@ public class CertificationService {
     // 선택한 월 카테고리별 조회
     // 선택한 월 전체 카테고리 조회
 
-    // ================= 자격증 리스트 조회 ==================
+    // ================= 자격증 리스트 조회 ================== 페이징하기!!!
+    // 카테고리별로 조회, 여러 카테고리 선택 가능
+    // 직무별 top 자격증 조회, 여러 카테고리 선택 가능
 
 
     /* --- 회원의 자격증 스크랩 --- */

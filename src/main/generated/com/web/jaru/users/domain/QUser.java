@@ -34,6 +34,10 @@ public class QUser extends EntityPathBase<User> {
 
     public final BooleanPath isDeleted = createBoolean("isDeleted");
 
+    public final BooleanPath isGoogleCalConnected = createBoolean("isGoogleCalConnected");
+
+    public final BooleanPath isNotified = createBoolean("isNotified");
+
     //inherited
     public final DateTimePath<java.time.LocalDateTime> modifiedDate = _super.modifiedDate;
 
