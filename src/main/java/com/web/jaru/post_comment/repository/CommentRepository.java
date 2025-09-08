@@ -1,6 +1,6 @@
-package com.web.jaru.posts_comments.repository;
+package com.web.jaru.post_comment.repository;
 
-import com.web.jaru.posts_comments.domain.Comment;
+import com.web.jaru.post_comment.domain.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CommentRepository extends JpaRepository<Comment, Long>, CommentCustomRepository {

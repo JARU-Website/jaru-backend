@@ -1,7 +1,7 @@
-package com.web.jaru.posts_comments.repository;
+package com.web.jaru.post_comment.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.web.jaru.posts_comments.domain.Comment;
+import com.web.jaru.post_comment.domain.Comment;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;

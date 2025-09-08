@@ -1,4 +1,4 @@
-package com.web.jaru.posts_comments.domain;
+package com.web.jaru.post_comment.domain;
 
 import com.web.jaru.BaseTimeEntity;
 import com.web.jaru.posts.domain.Post;
@@ -50,6 +50,10 @@ public class Comment extends BaseTimeEntity {
 
     // 변경 메서드
     public void changeContent(String content) { this.content = content; }
+
+    public void plusLikeCount() { this.likeCount++; }
+
+    public void minusLikeCount() { this.likeCount--; }
 
     public void plusReplyCount() { this.replyCount++; }
 
