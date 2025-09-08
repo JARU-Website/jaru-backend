@@ -123,7 +123,7 @@ public class PostService {
 
         boolean isLiked = false;
 
-        if (postLikeRepository.existsByUserAndPost(loginUser, findPost)) {
+        if (loginUser != null && postLikeRepository.existsByUserAndPost(loginUser, findPost)) {
             isLiked = true;
         }
 
