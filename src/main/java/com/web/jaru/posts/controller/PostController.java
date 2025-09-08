@@ -8,9 +8,8 @@ import com.web.jaru.posts.controller.dto.request.PostRequest;
 import com.web.jaru.posts.controller.dto.response.CommentResponse;
 import com.web.jaru.posts.controller.dto.response.PostResponse;
 import com.web.jaru.posts.service.PostService;
-import com.web.jaru.posts_comments.service.CommentService;
+import com.web.jaru.post_comment.service.CommentService;
 import com.web.jaru.security.service.CustomUserDetails;
-import com.web.jaru.users.domain.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -32,7 +31,9 @@ public class PostController {
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<Long> createPost(@AuthenticationPrincipal CustomUserDetails userDetails,
                                          @Valid @RequestBody PostRequest.Create req) {
+
         Long postId = postService.createPost(userDetails.getUser().getId(), req);
+
         return ApiResponse.onSuccess(postId, SuccessCode.POST_SAVED);
     }
 
@@ -40,6 +41,7 @@ public class PostController {
     @GetMapping("/list/newest")
     public ApiResponse<PageDto<PostResponse.Summary>> findNewestPostList(@RequestParam(name = "postCategoryId") Long postCategoryId, @RequestParam(name = "certCategoryId", required = false) Long certCategoryId,
                                                                          @PageableDefault(page = 0, size = 10)  Pageable pageable) {
+
         return ApiResponse.onSuccess(postService.findNewest(postCategoryId, certCategoryId, pageable), SuccessCode.OK);
     }
 
@@ -47,6 +49,7 @@ public class PostController {
     @GetMapping("/list/most-liked")
     public ApiResponse<PageDto<PostResponse.Summary>> findMostLikedPostList(@RequestParam(name = "postCategoryId") Long postCategoryId, @RequestParam(name = "certCategoryId", required = false) Long certCategoryId,
                                                                             @PageableDefault(page = 0, size = 10)  Pageable pageable) {
+
         return ApiResponse.onSuccess(postService.findMostLiked(postCategoryId, certCategoryId, pageable), SuccessCode.OK);
     }
 
@@ -71,6 +74,7 @@ public class PostController {
                                          @PathVariable(value = "postId") Long postId) {
 
         postService.editPost(postId, userDetails.getUser().getId(), req);
+
         return ApiResponse.onSuccess(null, SuccessCode.POST_SAVED);
     }
 
@@ -80,6 +84,7 @@ public class PostController {
                                         @PathVariable(value = "postId") Long postId) {
 
         postService.deletePost(postId, userDetails.getUser().getId());
+
         return ApiResponse.onSuccess(null, SuccessCode.POST_DELETED);
     }
 
@@ -91,14 +96,17 @@ public class PostController {
                                           @PathVariable(value = "postId") Long postId) {
 
         postService.savePostLike(postId, userDetails.getUser().getId());
+
         return ApiResponse.onSuccess(null, SuccessCode.POST_LIKE_SAVED);
     }
 
+    // 게시글 좋아요 취소
     @DeleteMapping("/like/{postId}")
     public ApiResponse<Void> deletePostLike(@AuthenticationPrincipal CustomUserDetails userDetails,
                                           @PathVariable(value = "postId") Long postId) {
 
         postService.deletePostLike(postId, userDetails.getUser().getId());
+
         return ApiResponse.onSuccess(null, SuccessCode.POST_LIKE_DELETED);
     }
 
@@ -112,6 +120,7 @@ public class PostController {
                                     @PathVariable(name = "postId") Long postId) {
 
         Long commentId = commentService.createComment(postId, userDetails.getUser().getId(), req);
+
         return ApiResponse.onSuccess(commentId, SuccessCode.CREATED);
     }
 
@@ -120,6 +129,7 @@ public class PostController {
     public ApiResponse<PageDto<CommentResponse.CommentThread>> getCommentList(@AuthenticationPrincipal CustomUserDetails userDetails,
                                                                               @PathVariable(name = "postId") Long postId,
                                                                               @PageableDefault(page = 0, size = 10)  Pageable pageable) {
+
         return ApiResponse.onSuccess(commentService.findCommentList(postId, userDetails.getUser().getId(), pageable), SuccessCode.OK);
     }
 
@@ -130,7 +140,8 @@ public class PostController {
                                            @Valid @RequestBody CommentRequest.Update req) {
 
         commentService.updateComment(commentId, userDetails.getUser().getId(), req);
-        return ApiResponse.onSuccess(null, SuccessCode.OK);
+
+        return ApiResponse.onSuccess(null, SuccessCode.COMMENT_SAVED);
     }
 
     // 댓글 삭제(소프트 삭제)
@@ -138,7 +149,29 @@ public class PostController {
     public ApiResponse<Void> deleteComment(@AuthenticationPrincipal CustomUserDetails userDetails,
                                            @PathVariable(name = "commentId") Long commentId) {
         commentService.deleteComment(commentId, userDetails.getUser().getId());
-        return ApiResponse.onSuccess(null, SuccessCode.OK);
+
+        return ApiResponse.onSuccess(null, SuccessCode.COMMENT_DELETED);
+    }
+
+    /* --- 댓글 좋아요 API --- */
+    // 게시글 좋아요 저장
+    @PostMapping("/like/{postId}")
+    public ApiResponse<Void> saveCommentLike(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                          @PathVariable(value = "postId") Long postId) {
+
+        commentService.saveCommentLike(postId, userDetails.getUser().getId());
+
+        return ApiResponse.onSuccess(null, SuccessCode.COMMENT_LIKE_SAVED);
+    }
+
+    // 게시글 좋아요 취소
+    @DeleteMapping("/like/{postId}")
+    public ApiResponse<Void> deleteCommentLike(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                            @PathVariable(value = "postId") Long postId) {
+
+        commentService.deleteCommentLike(postId, userDetails.getUser().getId());
+
+        return ApiResponse.onSuccess(null, SuccessCode.COMMENT_LIKE_DELETED);
     }
 
 }

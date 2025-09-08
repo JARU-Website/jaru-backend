@@ -1,4 +1,4 @@
-package com.web.jaru.posts_comments.domain;
+package com.web.jaru.post_comment.domain;
 
 import com.web.jaru.BaseTimeEntity;
 import com.web.jaru.posts.domain.Post;

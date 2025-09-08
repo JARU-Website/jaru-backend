@@ -1,14 +1,17 @@
-package com.web.jaru.posts_comments.service;
+package com.web.jaru.post_comment.service;
 
 import com.web.jaru.common.dto.response.PageDto;
 import com.web.jaru.common.exception.CustomException;
 import com.web.jaru.common.response.ErrorCode;
+import com.web.jaru.post_comment_like.domain.CommentLike;
+import com.web.jaru.post_comment_like.repository.CommentLikeRepository;
+import com.web.jaru.post_like.domain.PostLike;
 import com.web.jaru.posts.controller.dto.request.CommentRequest;
 import com.web.jaru.posts.controller.dto.response.CommentResponse;
 import com.web.jaru.posts.domain.Post;
 import com.web.jaru.posts.repository.PostRepository;
-import com.web.jaru.posts_comments.domain.Comment;
-import com.web.jaru.posts_comments.repository.CommentRepository;
+import com.web.jaru.post_comment.domain.Comment;
+import com.web.jaru.post_comment.repository.CommentRepository;
 import com.web.jaru.users.domain.User;
 import com.web.jaru.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +34,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final CommentLikeRepository commentLikeRepository;
 
     // 댓글 생성
     @Transactional
@@ -137,6 +141,38 @@ public class CommentService {
             findComment.getParent().minusReplyCount();
         }
 
+    }
+
+    // 댓글 좋아요
+    @Transactional
+    public void saveCommentLike(Long commentId, Long loginUserId) {
+
+        Comment findComment = getCommentOrThrow(commentId);
+
+        User findUser = getUserOrThrow(loginUserId);
+
+        // Column unique 제약조건 핸들링 (중복 컬럼 검증)
+        if (commentLikeRepository.existsByUserAndComment(findUser, findComment)) {
+            throw new CustomException(ErrorCode.EXIST_POST_LIKE);
+        }
+
+        CommentLike commentLike = CommentLike.builder()
+                .user(findUser)
+                .comment(findComment)
+                .build();
+
+        commentLikeRepository.save(commentLike);
+    }
+
+    // 댓글 좋아요 취소
+    @Transactional
+    public void deleteCommentLike(Long commentId, Long loginUserId) {
+
+        User findUser = getUserOrThrow(loginUserId);
+
+        Comment findComment = getCommentOrThrow(commentId);
+
+        commentLikeRepository.deleteByUserAndComment(findUser, findComment);
     }
 
     private Comment getCommentOrThrow(Long commentId) {
