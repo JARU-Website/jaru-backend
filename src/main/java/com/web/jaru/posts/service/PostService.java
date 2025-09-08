@@ -216,6 +216,8 @@ public class PostService {
                 .build();
 
         postLikeRepository.save(postLike);
+
+        findPost.plusLikeCount();
     }
 
     // 게시글 좋아요 취소
@@ -227,6 +229,8 @@ public class PostService {
         Post findPost = getPostOrThrow(postId);
 
         postLikeRepository.deleteByUserAndPost(findUser, findPost);
+
+        findPost.minusLikeCount();
     }
 
     /* --- 예외 처리 --- */
