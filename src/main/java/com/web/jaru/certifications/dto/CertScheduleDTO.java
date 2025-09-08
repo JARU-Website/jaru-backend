@@ -79,13 +79,13 @@ public class CertScheduleDTO {
             String scheduleDay
     ){}
 
-    @Schema(name = "월별 자격증 일정 응답")
+    @Schema(name = "월별 자격증 응답")
     public record MonthlyCertResponse(
             @Schema(description = "자격증 ID", example = "3")
             Long certId,
 
-            @Schema(description = "일정명", example = "2025년 정기 기사 3회 필기시험")
-            String scheduleName,
+            @Schema(description = "일정명", example = "2025년 정기 기사 3회")
+            String certName,
 
             @Schema(description = "카테고리 ID", example = "10")
             Long categoryId,

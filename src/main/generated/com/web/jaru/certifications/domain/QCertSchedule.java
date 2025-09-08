@@ -40,8 +40,6 @@ public class QCertSchedule extends EntityPathBase<CertSchedule> {
 
     public final DatePath<java.time.LocalDate> resultDate = createDate("resultDate", java.time.LocalDate.class);
 
-    public final EnumPath<ScheduleType> scheduleType = createEnum("scheduleType", ScheduleType.class);
-
     public final DatePath<java.time.LocalDate> testDateFrom = createDate("testDateFrom", java.time.LocalDate.class);
 
     public final DatePath<java.time.LocalDate> testDateTo = createDate("testDateTo", java.time.LocalDate.class);

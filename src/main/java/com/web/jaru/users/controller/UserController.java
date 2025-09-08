@@ -30,5 +30,7 @@ public class UserController {
         return ApiResponse.onSuccess(userService.getUserInfo(user), SuccessCode.OK);
     }
 
+    // 구글 캘린더 연동(로그인 시 구글 토큰 db에 저장하는걸로 추가하기? or redis에 추가하기) -> 북마크한 자격증이 다 추가가 되는? 앞으로의 일정만!
+    // 구글 캘린더 연동 취소
 
 }

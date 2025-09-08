@@ -4,12 +4,12 @@ import com.web.jaru.BaseTimeEntity;
 import com.web.jaru.certifications.domain.Certification;
 import com.web.jaru.users.domain.User;
 import jakarta.persistence.*;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.annotations.*;
 
 @Entity
 @Getter
@@ -20,6 +20,7 @@ import org.hibernate.annotations.OnDeleteAction;
         name = "user_alarm_cert_unique",
         columnNames = {"user_id", "certification_id"}
 )})
+@SoftDelete(columnName = "deleted")
 public class UserAlarmCert extends BaseTimeEntity {
 
     @Id
