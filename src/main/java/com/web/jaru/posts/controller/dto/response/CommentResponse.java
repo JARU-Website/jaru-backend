@@ -7,10 +7,6 @@ public final class CommentResponse {
 
     private CommentResponse() {}
 
-    public record CommentListResponse (
-
-    ) { }
-
     // 단일 댓글
     public record Comment(
             Long commentId,
@@ -23,6 +19,7 @@ public final class CommentResponse {
             int replyCount,
             boolean isDeleted,
             boolean isWriter, // 댓글 작성자 본인 여부
+            boolean isLiked, // 댓글에 좋아요 표시 여부
             LocalDateTime createdDate
     ) { }
 
