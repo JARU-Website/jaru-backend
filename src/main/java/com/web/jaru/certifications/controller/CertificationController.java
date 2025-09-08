@@ -14,9 +14,9 @@ public class CertificationController {
 
     private final CertificationService certificationService;
 
-    // ======== 회원의 자격증 스크랩 =======
+    /* --- 회원의 자격증 스크랩 --- */
 
-    // 회원-자격증 스크랩 관계 등록
+    // 자격증 스크랩 저장
     @PostMapping("/scrap/{certificationId}")
     public ApiResponse<Void> saveScrapInfo(User user,
                                            @PathVariable(value = "certificationId") Long certificationId) {
@@ -25,11 +25,12 @@ public class CertificationController {
 
     }
 
-    // 회원-자격증 스크랩 관계 삭제
+    // 자격증 스크랩 삭제
     @DeleteMapping("/scrap/{certificationId}")
     public ApiResponse<Void> deleteScrapInfo(User user,
                                              @PathVariable(value = "certificationId") Long certificationId) {
         certificationService.deleteScrapInfo(user, certificationId);
         return ApiResponse.onSuccess(null, SuccessCode.CERT_SCRAP_DELETED);
     }
+
 }
