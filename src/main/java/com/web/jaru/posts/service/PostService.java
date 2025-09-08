@@ -127,7 +127,9 @@ public class PostService {
             isLiked = true;
         }
 
-        return toPostDto(findPost, isLiked);
+        PostResponse.Poll poll = pollService.findPoll(findPost, loginUser);
+
+        return toPostDto(findPost, poll, isLiked);
     }
 
     // 게시글 수정
@@ -273,7 +275,7 @@ public class PostService {
         );
     }
 
-    private PostResponse.Post toPostDto(Post post, boolean isLiked) {
+    private PostResponse.Post toPostDto(Post post, PostResponse.Poll poll, boolean isLiked) {
         return new PostResponse.Post(
                 post.getId(),
                 post.getTitle(),
@@ -285,6 +287,7 @@ public class PostService {
                 post.getView(),
                 post.getCommentCount(),
                 post.getWriter().getNickname(),
+                poll,
                 post.getCreatedDate()
         );
     }

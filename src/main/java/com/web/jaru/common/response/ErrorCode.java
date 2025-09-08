@@ -29,6 +29,7 @@ public enum ErrorCode implements BaseCode {
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "COMMENT-001", "존재하지 않는 댓글입니다."),
     COMMENT_BAD_REQUEST(HttpStatus.BAD_REQUEST, "COMMENT-002", "유효하지 않은 댓글입니다."),
     EXIST_POLL_BY_POST(HttpStatus.CONFLICT, "POLL-001", "이미 존재하는 투표입니다."),
+    POLL_NOT_FOUND(HttpStatus.NOT_FOUND, "POLL404", "해당 투표를 찾을 수 없습니다."),
 
     // 사용자 관련
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "ACCOUNT404", "사용자를 찾을 수 없습니다."),

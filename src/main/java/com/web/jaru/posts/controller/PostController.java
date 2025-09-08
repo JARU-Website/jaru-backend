@@ -168,4 +168,10 @@ public class PostController {
         return ApiResponse.onSuccess(null, SuccessCode.COMMENT_LIKE_DELETED);
     }
 
+    /* --- 투표 API --- */
+
+    // 투표 조회
+    @DeleteMapping("/polls/{postId}")
+    public ApiResponse<>
+
 }

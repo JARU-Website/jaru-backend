@@ -11,7 +11,7 @@ public final class PollRequest {
     private PollRequest() {}
 
     public record Create(
-            boolean allowMultiple,
+            String title,
             @NotNull @Size(min = 2, max = 10) List<@NotBlank @Size(max = 100) String> options
             ) { }
 }
