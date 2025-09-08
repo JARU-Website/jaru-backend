@@ -162,6 +162,8 @@ public class CommentService {
                 .build();
 
         commentLikeRepository.save(commentLike);
+
+        findComment.plusLikeCount();
     }
 
     // 댓글 좋아요 취소
@@ -173,6 +175,8 @@ public class CommentService {
         Comment findComment = getCommentOrThrow(commentId);
 
         commentLikeRepository.deleteByUserAndComment(findUser, findComment);
+
+        findComment.minusLikeCount();
     }
 
     private Comment getCommentOrThrow(Long commentId) {
