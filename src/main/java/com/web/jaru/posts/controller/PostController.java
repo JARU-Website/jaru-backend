@@ -168,4 +168,7 @@ public class PostController {
         return ApiResponse.onSuccess(null, SuccessCode.COMMENT_LIKE_DELETED);
     }
 
+    /* --- 투표 API --- */
+
+
 }
