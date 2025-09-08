@@ -72,17 +72,13 @@ public class Post extends BaseTimeEntity {
     public void changeCertCategory(CertCategory certCategory) { this.certCategory = certCategory; }
     public void changeDeletedBy(User deletedBy) { this.deletedBy = deletedBy; }
 
-    /**
-     * 소프트 삭제
-     */
+    /* --- 소프트 삭제 --- */
     public void softDelete() {
         this.isDeleted = true;
         this.deletedAt = LocalDateTime.now();
     }
 
-    /** 소프트 삭제 복구
-     *
-     */
+    /* --- 소프트 삭제 복구 --- */
     public void restore() {
         this.isDeleted = false;
         this.deletedAt = null;

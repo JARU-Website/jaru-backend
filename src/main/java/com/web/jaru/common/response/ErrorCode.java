@@ -19,14 +19,15 @@ public enum ErrorCode implements BaseCode {
     CERTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "CERT-001", "해당 자격증이 존재하지 않습니다."),
     EXIST_USER_SCRAP_CERT(HttpStatus.CONFLICT, "CERT-002", "이미 존재하는 자격증 스크랩 정보입니다."),
     NOT_FOUND_USER_SCRAP_CERT(HttpStatus.NO_CONTENT, "CERT-003", "존재하지 않는 자격증 스크랩 정보입니다."),
-
     CERT_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "CERT-004", "존재하지 않는 자격증 카테고리입니다."),
+
     // 커뮤니티 에러
     POST_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "POST-001", "존재하지 않는 게시글 카테고리입니다."),
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "POST-002", "존재하지 않는 게시글입니다."),
+    PERMISSION_DENIED(HttpStatus.UNAUTHORIZED, "POST-003","권한이 없습니다."),
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "COMMENT-001", "존재하지 않는 댓글입니다."),
     COMMENT_BAD_REQUEST(HttpStatus.BAD_REQUEST, "COMMENT-002", "유효하지 않은 댓글입니다."),
-    FORBIDDEN(HttpStatus.BAD_REQUEST, "POST403", "작성자가 아닙니다."),
+    EXIST_POLL_BY_POST(HttpStatus.CONFLICT, "POLL-001", "이미 존재하는 투표입니다."),
 
     // 사용자 관련
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "ACCOUNT404", "사용자를 찾을 수 없습니다."),

@@ -5,6 +5,8 @@ import com.web.jaru.certifications.repository.CertCategoryRepository;
 import com.web.jaru.common.dto.response.PageDto;
 import com.web.jaru.common.exception.CustomException;
 import com.web.jaru.common.response.ErrorCode;
+import com.web.jaru.post_poll.dto.request.PollRequest;
+import com.web.jaru.post_poll.service.PollService;
 import com.web.jaru.posts.controller.dto.request.PostRequest;
 import com.web.jaru.posts.controller.dto.response.PostResponse;
 import com.web.jaru.posts.domain.Post;
@@ -26,6 +28,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final PostCategoryRepository postCategoryRepository;
     private final CertCategoryRepository certCategoryRepository;
+    private final PollService pollService;
 
     // 게시글 생성
     @Transactional
@@ -48,7 +51,16 @@ public class PostService {
                 .certCategory(findCertCategory)
                 .build();
 
-        return postRepository.save(post).getId();
+        Long savedPostId = postRepository.save(post).getId();
+
+        // 투표 생성
+        PollRequest.Create pollReq = req.poll();
+
+        if (pollReq != null) {
+            pollService.createPoll(savedPostId, pollReq);
+        }
+
+        return savedPostId;
     }
 
     // 게시글 목록 조회 (최신순)
@@ -59,7 +71,7 @@ public class PostService {
 
         Page<Post> page = postRepository.findNewest(postCategoryId, certCategoryId, pageable);
 
-        Page<PostResponse.Summary> mapped = page.map(p -> {
+        Page<PostResponse.Summary> result = page.map(p -> {
             String postCategoryName = (postCategory != null)
                     ? postCategory.getName()
                     : (p.getPostCategory() != null ? p.getPostCategory().getName() : null);
@@ -71,7 +83,7 @@ public class PostService {
             return toSummaryDto(p, postCategoryName, certCategoryName);
         });
 
-        return PageDto.of(mapped);
+        return PageDto.of(result);
     }
 
 
@@ -83,7 +95,7 @@ public class PostService {
 
         Page<Post> page = postRepository.findMostLiked(postCategoryId, certCategoryId, pageable);
 
-        Page<PostResponse.Summary> mapped = page.map(p -> {
+        Page<PostResponse.Summary> result = page.map(p -> {
             String postCategoryName = (postCategory != null)
                     ? postCategory.getName()
                     : (p.getPostCategory() != null ? p.getPostCategory().getName() : null);
@@ -95,7 +107,7 @@ public class PostService {
             return toSummaryDto(p, postCategoryName, certCategoryName);
         });
 
-        return PageDto.of(mapped);
+        return PageDto.of(result);
     }
 
     // 게시글 상세 조회
@@ -182,13 +194,13 @@ public class PostService {
 
     private void checkEditPost(User user, Post post) {
         if (!post.getWriter().getId().equals(user.getId())) {
-            throw new CustomException(ErrorCode.FORBIDDEN);
+            throw new CustomException(ErrorCode.PERMISSION_DENIED);
         }
     }
 
     private void checkIsAdmin(User user) {
         if (!user.getRole().equals("ADMIN")) {
-            throw new CustomException(ErrorCode.FORBIDDEN);
+            throw new CustomException(ErrorCode.PERMISSION_DENIED);
         }
     }
 
