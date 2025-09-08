@@ -15,7 +15,11 @@ public enum SuccessCode implements BaseCode {
 
     // --- Domain-specific success codes ---
     CERT_SCRAP_SAVED(HttpStatus.CREATED, "CERT-SUCCESS-201-01", "스크랩 정보가 저장되었습니다."),
-    CERT_SCRAP_DELETED(HttpStatus.NO_CONTENT, "CERT-SUCCESS-204-01", "스크랩이 삭제되었습니다.");
+    CERT_SCRAP_DELETED(HttpStatus.NO_CONTENT, "CERT-SUCCESS-204-01", "스크랩이 삭제되었습니다."),
+    POST_SAVED(HttpStatus.CREATED, "POST-SUCCESS-201-01", "게시글 정보가 저장되었습니다."),
+    POST_DELETED(HttpStatus.NO_CONTENT, "POST-SUCCESS-204-01", "게시글 정보가 삭제되었습니다."),
+    POST_LIKE_SAVED(HttpStatus.CREATED, "POST-SUCCESS-201-02", "게시글 좋아요 정보가 저장되었습니다."),
+    POST_LIKE_DELETED(HttpStatus.NO_CONTENT, "POST-SUCCESS-204-02", "게시글 좋아요 정보가 삭제되었습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

@@ -26,6 +26,7 @@ public final class PostResponse {
             String content,
             String postCategoryName,
             String certCategoryName,
+            boolean isLiked,
             int likeCount,
             int view,
             int commentCount,

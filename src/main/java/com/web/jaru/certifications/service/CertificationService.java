@@ -22,7 +22,7 @@ public class CertificationService {
     private final UserScrapCertRepository userScrapCertRepository;
 
 
-    // ================= 회원의 자격증 스크랩 ==================
+    /* --- 회원의 자격증 스크랩 --- */
     @Transactional
     public void saveScrapInfo(User user, Long certificationId) {
 

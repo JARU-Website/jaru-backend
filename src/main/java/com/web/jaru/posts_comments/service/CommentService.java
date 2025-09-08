@@ -10,6 +10,7 @@ import com.web.jaru.posts.repository.PostRepository;
 import com.web.jaru.posts_comments.domain.Comment;
 import com.web.jaru.posts_comments.repository.CommentRepository;
 import com.web.jaru.users.domain.User;
+import com.web.jaru.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -29,13 +30,17 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
+    private final UserRepository userRepository;
 
     // 댓글 생성
     @Transactional
-    public Long createComment(Long postId, User loginUser, CommentRequest.Create req) {
+    public Long createComment(Long postId, Long loginUserId, CommentRequest.Create req) {
 
         Post findPost = getPostOrThrow(postId);
+
         Comment parent = null;
+
+        User findUser = getUserOrThrow(loginUserId);
 
         // 대댓글
         if (req.parentId() != null) {
@@ -49,7 +54,7 @@ public class CommentService {
 
         Comment comment = Comment.builder()
                 .post(findPost)
-                .writer(loginUser)
+                .writer(findUser)
                 .parent(parent)
                 .content(req.content())
                 .build();
@@ -58,7 +63,9 @@ public class CommentService {
     }
 
     // 댓글 목록 조회 (대댓글 포함)
-    public PageDto<CommentResponse.CommentThread> findCommentList(Long postId, User loginUser, Pageable pageable) {
+    public PageDto<CommentResponse.CommentThread> findCommentList(Long postId, Long loginUserId, Pageable pageable) {
+
+        User findUser = getUserOrThrow(loginUserId);
 
         // 1. 루트 댓글 페이지
         Page<Comment> rootList = commentRepository.findRootComments(postId, pageable);
@@ -83,9 +90,9 @@ public class CommentService {
         // 4. 엔티티 -> DTO 변환
         List<CommentResponse.CommentThread> resultList = rootList.getContent().stream()
                 .map(root -> new CommentResponse.CommentThread(
-                        toDto(root, loginUser.getId()),
+                        toDto(root, findUser.getId()),
                         replyMap.getOrDefault(root.getId(), List.of()).stream()
-                                .map(comment -> toDto(comment, loginUser.getId()))
+                                .map(comment -> toDto(comment, findUser.getId()))
                                 .toList()
                 ))
                 .toList();
@@ -97,12 +104,14 @@ public class CommentService {
 
     // 댓글 수정
     @Transactional
-    public void updateComment(Long commentId, User loginUser, CommentRequest.Update req) {
+    public void updateComment(Long commentId, Long loginUserId, CommentRequest.Update req) {
+
+        User findUser = getUserOrThrow(loginUserId);
 
         Comment findComment = getCommentOrThrow(commentId);
 
         // 권한 확인
-        checkEditComment(loginUser, findComment);
+        checkEditComment(findUser, findComment);
         // 삭제 여부
         checkDeletedComment(findComment);
 
@@ -111,11 +120,14 @@ public class CommentService {
 
     // 댓글 삭제
     @Transactional
-    public void deleteComment(Long commentId, User loginUser) {
+    public void deleteComment(Long commentId, Long loginUserId) {
+
+        User findUser = getUserOrThrow(loginUserId);
+
         Comment findComment = getCommentOrThrow(commentId);
 
         // 권한 확인
-        checkEditComment(loginUser, findComment);
+        checkEditComment(findUser, findComment);
         // 삭제 여부
         checkDeletedComment(findComment);
 
@@ -130,6 +142,12 @@ public class CommentService {
     private Comment getCommentOrThrow(Long commentId) {
         return commentRepository.findById(commentId)
                 .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
+    }
+
+    /* --- 예외 처리 --- */
+    private User getUserOrThrow(Long loginUserId) {
+        return userRepository.findById(loginUserId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
     }
 
     private Post getPostOrThrow(Long postId) {
