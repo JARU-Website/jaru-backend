@@ -58,13 +58,7 @@ public class PostController {
     public ApiResponse<PostResponse.Post> getPost(@AuthenticationPrincipal CustomUserDetails userDetails,
                                                   @PathVariable(value = "postId") Long postId) {
 
-        return ApiResponse.onSuccess(postService.findPost(postId, userDetails.getUser().getId()), SuccessCode.OK);
-    }
-
-    // 게시글 상세 조회 (비회원)
-    public ApiResponse<PostResponse.Post> getPostByNonUser(@PathVariable(value = "postId") Long postId) {
-
-        return ApiResponse.onSuccess(postService.findPostByNonUser(postId), SuccessCode.OK);
+        return ApiResponse.onSuccess(postService.findPost(postId, userDetails.getUser()), SuccessCode.OK);
     }
 
     // 게시글 수정
@@ -130,7 +124,7 @@ public class PostController {
                                                                               @PathVariable(name = "postId") Long postId,
                                                                               @PageableDefault(page = 0, size = 10)  Pageable pageable) {
 
-        return ApiResponse.onSuccess(commentService.findCommentList(postId, userDetails.getUser().getId(), pageable), SuccessCode.OK);
+        return ApiResponse.onSuccess(commentService.findCommentList(postId, userDetails.getUser(), pageable), SuccessCode.OK);
     }
 
     // 댓글 수정

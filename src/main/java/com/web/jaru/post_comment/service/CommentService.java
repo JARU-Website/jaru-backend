@@ -67,9 +67,7 @@ public class CommentService {
     }
 
     // 댓글 목록 조회 (대댓글 포함)
-    public PageDto<CommentResponse.CommentThread> findCommentList(Long postId, Long loginUserId, Pageable pageable) {
-
-        User findUser = getUserOrThrow(loginUserId);
+    public PageDto<CommentResponse.CommentThread> findCommentList(Long postId, User loginUser, Pageable pageable) {
 
         // 1. 루트 댓글 페이지
         Page<Comment> rootList = commentRepository.findRootComments(postId, pageable);
@@ -94,9 +92,9 @@ public class CommentService {
         // 4. 엔티티 -> DTO 변환
         List<CommentResponse.CommentThread> resultList = rootList.getContent().stream()
                 .map(root -> new CommentResponse.CommentThread(
-                        toDto(root, findUser.getId()),
+                        toDto(root, loginUser),
                         replyMap.getOrDefault(root.getId(), List.of()).stream()
-                                .map(comment -> toDto(comment, findUser.getId()))
+                                .map(comment -> toDto(comment, loginUser))
                                 .toList()
                 ))
                 .toList();
@@ -208,7 +206,7 @@ public class CommentService {
     }
 
     /* --- 엔티티 → 응답 DTO 매핑 --- */
-    private CommentResponse.Comment toDto(Comment c, Long loginUserId) {
+    private CommentResponse.Comment toDto(Comment c, User loginUser) {
         return new CommentResponse.Comment(
                 c.getId(),
                 c.getParent() == null ? null : c.getParent().getId(),
@@ -219,7 +217,8 @@ public class CommentService {
                 c.getLikeCount(),
                 c.isRoot() ? c.getReplyCount() : 0,   // 루트에만 의미
                 c.isDeleted(),
-                loginUserId != null && c.getWriter().getId().equals(loginUserId),
+                loginUser != null && c.getWriter().equals(loginUser),
+                loginUser != null && commentLikeRepository.existsByUserAndComment(loginUser, c),
                 c.getCreatedDate()
         );
     }

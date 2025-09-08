@@ -116,26 +116,18 @@ public class PostService {
         return PageDto.of(result);
     }
 
-    // 게시글 상세 조회 (회원)
-    public PostResponse.Post findPost(Long postId, Long loginUserId) {
+    // 게시글 상세 조회
+    public PostResponse.Post findPost(Long postId, User loginUser) {
 
         Post findPost = getPostOrThrow(postId);
-        User findUser = getUserOrThrow(loginUserId);
+
         boolean isLiked = false;
 
-        if (postLikeRepository.existsByUserAndPost(findUser, findPost)) {
+        if (loginUser != null && postLikeRepository.existsByUserAndPost(loginUser, findPost)) {
             isLiked = true;
         }
 
         return toPostDto(findPost, isLiked);
-    }
-
-    // 게시글 상세 조회 (비회원)
-    public PostResponse.Post findPostByNonUser(Long postId) {
-
-        Post findPost = getPostOrThrow(postId);
-
-        return toPostDto(findPost, false);
     }
 
     // 게시글 수정
