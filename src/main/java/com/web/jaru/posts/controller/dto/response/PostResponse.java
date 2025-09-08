@@ -1,5 +1,6 @@
 package com.web.jaru.posts.controller.dto.response;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public final class PostResponse {
@@ -28,7 +29,7 @@ public final class PostResponse {
             int likeCount,
             int view,
             int commentCount,
-            String writerNickname
-
+            String writerNickname,
+            LocalDateTime createdDate
     ) { }
 }

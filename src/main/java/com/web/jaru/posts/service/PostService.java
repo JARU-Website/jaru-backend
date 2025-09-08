@@ -80,7 +80,7 @@ public class PostService {
                     ? certCategory.getName()
                     : (p.getCertCategory() != null ? p.getCertCategory().getName() : null);
 
-            return toSummary(p, postCategoryName, certCategoryName);
+            return toSummaryDto(p, postCategoryName, certCategoryName);
         });
 
         return PageDto.of(result);
@@ -104,10 +104,18 @@ public class PostService {
                     ? certCategory.getName()
                     : (p.getCertCategory() != null ? p.getCertCategory().getName() : null);
 
-            return toSummary(p, postCategoryName, certCategoryName);
+            return toSummaryDto(p, postCategoryName, certCategoryName);
         });
 
         return PageDto.of(result);
+    }
+
+    // 게시글 상세 조회
+    public PostResponse.Post findPost(Long postId, User loginUser) {
+
+        Post post = getPostOrThrow(postId);
+
+        return toPostDto(post);
     }
 
     // 게시글 수정
@@ -197,7 +205,7 @@ public class PostService {
     }
 
     /* --- 엔티티 → 응답 DTO 매핑 --- */
-    private PostResponse.Summary toSummary(Post post, String postCategoryName, String certCategoryName) {
+    private PostResponse.Summary toSummaryDto(Post post, String postCategoryName, String certCategoryName) {
         return new PostResponse.Summary(
                 post.getId(),
                 post.getTitle(),
@@ -206,6 +214,21 @@ public class PostService {
                 post.getCommentCount(),
                 post.getLikeCount(),
                 post.getView(),
+                post.getWriter().getNickname(),
+                post.getCreatedDate()
+        );
+    }
+
+    private PostResponse.Post toPostDto(Post post) {
+        return new PostResponse.Post(
+                post.getId(),
+                post.getTitle(),
+                post.getContent(),
+                post.getPostCategory().getName(),
+                post.getCertCategory().getName(),
+                post.getLikeCount(),
+                post.getView(),
+                post.getCommentCount(),
                 post.getWriter().getNickname(),
                 post.getCreatedDate()
         );
