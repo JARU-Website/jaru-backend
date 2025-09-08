@@ -170,8 +170,5 @@ public class PostController {
 
     /* --- 투표 API --- */
 
-    // 투표 조회
-    @DeleteMapping("/polls/{postId}")
-    public ApiResponse<>
 
 }

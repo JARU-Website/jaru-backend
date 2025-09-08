@@ -20,7 +20,7 @@ public class PollOption extends BaseTimeEntity {
     @Column(name = "poll_option_id")
     private Long id;
 
-    @ManyToOne(fetch=FetchType.EAGER)
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="poll_id", nullable=false)
     private Poll poll;
 

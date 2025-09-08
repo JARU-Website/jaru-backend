@@ -107,7 +107,7 @@ public class PollService {
     }
 
     private Poll getPollOrThrow(Post post) {
-        return pollRepository.findByPoll(post)
+        return pollRepository.findByPost(post)
                 .orElseThrow(() -> new CustomException(ErrorCode.POLL_NOT_FOUND));
     }
 

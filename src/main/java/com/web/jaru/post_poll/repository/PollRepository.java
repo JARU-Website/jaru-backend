@@ -9,5 +9,5 @@ public interface PollRepository extends JpaRepository<Poll, Long> {
 
     boolean existsByPostId(Long postId); // 중복생성 방지
 
-    Optional<Poll> findByPoll(Post post);
+    Optional<Poll> findByPost(Post post);
 }

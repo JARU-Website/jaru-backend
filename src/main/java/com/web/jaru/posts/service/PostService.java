@@ -60,10 +60,8 @@ public class PostService {
         Long savedPostId = postRepository.save(post).getId();
 
         // 투표 생성
-        PollRequest.Create pollReq = req.poll();
-
-        if (pollReq != null) {
-            pollService.createPoll(savedPostId, pollReq);
+        if (req.poll() != null) {
+            pollService.createPoll(savedPostId, req.poll());
         }
 
         return savedPostId;
@@ -91,7 +89,6 @@ public class PostService {
 
         return PageDto.of(result);
     }
-
 
     // 게시글 목록 조회 (추천순)
     public PageDto<PostResponse.Summary> findMostLiked(Long postCategoryId, Long certCategoryId, Pageable pageable) {
@@ -127,7 +124,11 @@ public class PostService {
             isLiked = true;
         }
 
-        PostResponse.Poll poll = pollService.findPoll(findPost, loginUser);
+        PostResponse.Poll poll = null;
+
+        if (findPost.getPoll() != null) {
+            poll = pollService.findPoll(findPost, loginUser);
+        }
 
         return toPostDto(findPost, poll, isLiked);
     }
