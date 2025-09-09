@@ -28,4 +28,5 @@ public class BaseTimeEntity {
             pattern = "yyyy-MM-dd HH:mm:ss",
             timezone = "Asia/Seoul")
     private LocalDateTime modifiedDate;
+
 }
