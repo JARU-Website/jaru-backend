@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Table(name = "poll_votes",
-        uniqueConstraints = @UniqueConstraint(name="uk_vote_unique", columnNames={"user_id","poll_id","poll_option_id"}))
+        uniqueConstraints = @UniqueConstraint(name="uk_vote_unique", columnNames={"user_id","poll_id","option_id"}))
 public class PollVote extends BaseTimeEntity {
 
     @Id

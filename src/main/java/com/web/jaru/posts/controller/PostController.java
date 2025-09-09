@@ -1,5 +1,6 @@
 package com.web.jaru.posts.controller;
 
+import com.web.jaru.common.annotation.CurrentUser;
 import com.web.jaru.common.dto.response.PageDto;
 import com.web.jaru.common.response.ApiResponse;
 import com.web.jaru.common.response.SuccessCode;
@@ -29,7 +30,7 @@ public class PostController {
     // 게시글 생성
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
-    public ApiResponse<Long> createPost(@AuthenticationPrincipal CustomUserDetails userDetails,
+    public ApiResponse<Long> createPost(@CurrentUser CustomUserDetails userDetails,
                                          @Valid @RequestBody PostRequest.Create req) {
 
         Long postId = postService.createPost(userDetails.getUser().getId(), req);
@@ -55,7 +56,7 @@ public class PostController {
 
     // 게시글 상세 조회 (회원)
     @GetMapping("/{postId}")
-    public ApiResponse<PostResponse.Post> getPost(@AuthenticationPrincipal CustomUserDetails userDetails,
+    public ApiResponse<PostResponse.Post> getPost(@CurrentUser CustomUserDetails userDetails,
                                                   @PathVariable(value = "postId") Long postId) {
 
         return ApiResponse.onSuccess(postService.findPost(postId, userDetails.getUser()), SuccessCode.OK);
@@ -63,7 +64,7 @@ public class PostController {
 
     // 게시글 수정
     @PatchMapping("/edit/{postId}")
-    public ApiResponse<Void> updatePost(@AuthenticationPrincipal CustomUserDetails userDetails,
+    public ApiResponse<Void> updatePost(@CurrentUser CustomUserDetails userDetails,
                                          @Valid @RequestBody PostRequest.PatchUpdate req,
                                          @PathVariable(value = "postId") Long postId) {
 
@@ -74,7 +75,7 @@ public class PostController {
 
     // 게시글 삭제
     @DeleteMapping("/{postId}")
-    public ApiResponse<Void> deletePost(@AuthenticationPrincipal CustomUserDetails userDetails,
+    public ApiResponse<Void> deletePost(@CurrentUser CustomUserDetails userDetails,
                                         @PathVariable(value = "postId") Long postId) {
 
         postService.deletePost(postId, userDetails.getUser().getId());
@@ -86,7 +87,7 @@ public class PostController {
 
     // 게시글 좋아요 저장
     @PostMapping("/like/{postId}")
-    public ApiResponse<Void> savePostLike(@AuthenticationPrincipal CustomUserDetails userDetails,
+    public ApiResponse<Void> savePostLike(@CurrentUser CustomUserDetails userDetails,
                                           @PathVariable(value = "postId") Long postId) {
 
         postService.savePostLike(postId, userDetails.getUser().getId());
@@ -96,7 +97,7 @@ public class PostController {
 
     // 게시글 좋아요 취소
     @DeleteMapping("/like/{postId}")
-    public ApiResponse<Void> deletePostLike(@AuthenticationPrincipal CustomUserDetails userDetails,
+    public ApiResponse<Void> deletePostLike(@CurrentUser CustomUserDetails userDetails,
                                           @PathVariable(value = "postId") Long postId) {
 
         postService.deletePostLike(postId, userDetails.getUser().getId());
@@ -109,7 +110,7 @@ public class PostController {
     // 댓글 생성
     @PostMapping("/{postId}/comments")
     @ResponseStatus(HttpStatus.CREATED)
-    public ApiResponse<Long> createComment(@AuthenticationPrincipal CustomUserDetails userDetails,
+    public ApiResponse<Long> createComment(@CurrentUser CustomUserDetails userDetails,
                                     @Valid @RequestBody CommentRequest.Create req,
                                     @PathVariable(name = "postId") Long postId) {
 
@@ -120,7 +121,7 @@ public class PostController {
 
     // 댓글 목록 조회
     @GetMapping("/{postId}/comments")
-    public ApiResponse<PageDto<CommentResponse.CommentThread>> getCommentList(@AuthenticationPrincipal CustomUserDetails userDetails,
+    public ApiResponse<PageDto<CommentResponse.CommentThread>> getCommentList(@CurrentUser CustomUserDetails userDetails,
                                                                               @PathVariable(name = "postId") Long postId,
                                                                               @PageableDefault(page = 0, size = 10)  Pageable pageable) {
 
@@ -129,7 +130,7 @@ public class PostController {
 
     // 댓글 수정
     @PatchMapping("/comments/{commentId}")
-    public ApiResponse<Void> updateComment(@AuthenticationPrincipal CustomUserDetails userDetails,
+    public ApiResponse<Void> updateComment(@CurrentUser CustomUserDetails userDetails,
                                            @PathVariable(name = "commentId") Long commentId,
                                            @Valid @RequestBody CommentRequest.Update req) {
 
@@ -140,7 +141,7 @@ public class PostController {
 
     // 댓글 삭제(소프트 삭제)
     @DeleteMapping("/comments/{commentId}")
-    public ApiResponse<Void> deleteComment(@AuthenticationPrincipal CustomUserDetails userDetails,
+    public ApiResponse<Void> deleteComment(@CurrentUser CustomUserDetails userDetails,
                                            @PathVariable(name = "commentId") Long commentId) {
         commentService.deleteComment(commentId, userDetails.getUser().getId());
 
@@ -148,6 +149,27 @@ public class PostController {
     }
 
     /* --- 댓글 좋아요 API --- */
+    // 댓글 좋아요 저장
+    @PostMapping("comments/like/{commentId}")
+    public ApiResponse<Void> saveCommentLike(@CurrentUser CustomUserDetails userDetails,
+                                          @PathVariable(value = "commentId") Long commentId) {
+
+        commentService.saveCommentLike(commentId, userDetails.getUser().getId());
+
+        return ApiResponse.onSuccess(null, SuccessCode.COMMENT_LIKE_SAVED);
+    }
+
+    // 댓글 좋아요 취소
+    @DeleteMapping("comments/like/{commentId}")
+    public ApiResponse<Void> deleteCommentLike(@CurrentUser CustomUserDetails userDetails,
+                                            @PathVariable(value = "commentId") Long commentId) {
+
+        commentService.deleteCommentLike(commentId, userDetails.getUser().getId());
+
+        return ApiResponse.onSuccess(null, SuccessCode.COMMENT_LIKE_DELETED);
+    }
+
+    /* --- 투표 API --- */
 
 
 }
