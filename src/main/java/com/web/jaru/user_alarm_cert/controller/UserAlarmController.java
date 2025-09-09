@@ -5,6 +5,7 @@ import com.web.jaru.common.response.ApiResponse;
 import com.web.jaru.common.response.SuccessCode;
 import com.web.jaru.security.service.CustomUserDetails;
 import com.web.jaru.user_alarm_cert.service.UserAlramCertService;
+import com.web.jaru.users.domain.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,10 +29,10 @@ public class UserAlarmController {
                     ApiResponse(responseCode = "404", description = "CERTIFICATION_NOT_FOUND - 자격증을 찾을 수 없음")
     })
     public ApiResponse<Void> setCertAlarm(
-            @CurrentUser CustomUserDetails user,
+            @CurrentUser User user,
             @PathVariable Long certId) {
 
-        userAlramCertService.setCertAlarm(user.getUser(), certId);
+        userAlramCertService.setCertAlarm(user, certId);
         return ApiResponse.onSuccess(null, SuccessCode.OK);
     }
 
@@ -44,10 +45,9 @@ public class UserAlarmController {
                     ApiResponse(responseCode = "404", description = "CERTIFICATION_NOT_FOUND - 자격증을 찾을 수 없음")
     })
     public ApiResponse<Void> cancelCertAlarm(
-            @CurrentUser CustomUserDetails user,
+            @CurrentUser User user,
             @PathVariable Long certId) {
-
-        userAlramCertService.cancelCertAlarm(user.getUser(), certId);
+        userAlramCertService.cancelCertAlarm(user, certId);
         return ApiResponse.onSuccess(null, SuccessCode.OK);
     }
 }

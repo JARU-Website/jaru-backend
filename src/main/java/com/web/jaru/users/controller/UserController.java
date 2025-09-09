@@ -25,8 +25,7 @@ public class UserController {
 
     @GetMapping("/me")
     @Operation(summary = "내 정보 조회", description = "쿠키 기반 JWT 인증을 통해 현재 로그인한 회원 정보를 조회합니다.")
-    public ApiResponse<UserDTO.UserResponseDTO> getMyInfo(@CurrentUser CustomUserDetails userDetails) {
-        User user = userDetails.getUser();
+    public ApiResponse<UserDTO.UserResponseDTO> getMyInfo(@CurrentUser User user) {
         return ApiResponse.onSuccess(userService.getUserInfo(user), SuccessCode.OK);
     }
 

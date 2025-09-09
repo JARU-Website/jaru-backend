@@ -148,24 +148,6 @@ public class PostController {
     }
 
     /* --- 댓글 좋아요 API --- */
-    // 게시글 좋아요 저장
-    @PostMapping("/like/{postId}")
-    public ApiResponse<Void> saveCommentLike(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                          @PathVariable(value = "postId") Long postId) {
 
-        commentService.saveCommentLike(postId, userDetails.getUser().getId());
-
-        return ApiResponse.onSuccess(null, SuccessCode.COMMENT_LIKE_SAVED);
-    }
-
-    // 게시글 좋아요 취소
-    @DeleteMapping("/like/{postId}")
-    public ApiResponse<Void> deleteCommentLike(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                            @PathVariable(value = "postId") Long postId) {
-
-        commentService.deleteCommentLike(postId, userDetails.getUser().getId());
-
-        return ApiResponse.onSuccess(null, SuccessCode.COMMENT_LIKE_DELETED);
-    }
 
 }

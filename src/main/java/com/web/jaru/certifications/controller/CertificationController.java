@@ -35,12 +35,12 @@ public class CertificationController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "UNAUTHORIZED_USER - 인증되지 않은 사용자")
     })
     public ApiResponse<List<CertScheduleDTO.MyCertScheduleResponse>> viewMyMonthlyCert(
-            @Parameter(hidden = true) @CurrentUser CustomUserDetails user,
+            @Parameter(hidden = true) @CurrentUser User user,
             @Parameter(description = "조회 연도", example = "2025") @RequestParam int year,
             @Parameter(description = "조회 월 (1~12)", example = "9") @RequestParam int month,
             @Parameter(description = "알림 설정 여부", example = "true") @RequestParam(defaultValue = "false") boolean isAlarmed) {
         return ApiResponse.onSuccess(
-                certificationService.viewMyMonthlyCert(user.getUser(), YearMonth.of(year, month), isAlarmed),
+                certificationService.viewMyMonthlyCert(user, YearMonth.of(year, month), isAlarmed),
                 SuccessCode.OK
         );
     }
@@ -52,12 +52,12 @@ public class CertificationController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "CERTIFICATION_NOT_FOUND - 자격증을 찾을 수 없음")
     })
     public ApiResponse<List<CertScheduleDTO.MyCertScheduleResponse>> viewMyCertScheduleByDay(
-            @Parameter(hidden = true) @CurrentUser CustomUserDetails user,
+            @Parameter(hidden = true) @CurrentUser User user,
             @Parameter(description = "조회 시작일", example = "2025-09-01") @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
             @Parameter(description = "조회 종료일", example = "2025-09-30") @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end,
             @Parameter(description = "알림 설정 여부", example = "false") @RequestParam(defaultValue = "false") boolean isAlarmed) {
         return ApiResponse.onSuccess(
-                certificationService.viewMyCertScheduleByDay(user.getUser(), start, end, isAlarmed),
+                certificationService.viewMyCertScheduleByDay(user, start, end, isAlarmed),
                 SuccessCode.OK
         );
     }
@@ -82,14 +82,14 @@ public class CertificationController {
     @GetMapping("/search")
     @Operation(summary = "자격증 검색", description = "검색어와 카테고리로 자격증을 검색합니다. 로그인된 사용자는 검색 기록이 저장됩니다.")
     public ApiResponse<CertDTO.PageDTO<CertDTO.CertListViewResponse>> searchCertByCategory(
-            @Parameter(hidden = true) @CurrentUser CustomUserDetails user,
+            @Parameter(hidden = true) @CurrentUser User user,
             @Parameter(description = "검색 키워드", example = "정보처리") @RequestParam(required = false) String keyword,
             @Parameter(description = "카테고리 ID 배열", example = "[1,2,3]") @RequestParam(required = false) Long[] categoryIds,
             @Parameter(description = "페이지 번호(0부터 시작)", example = "0") @RequestParam(defaultValue = "0") int page,
             @Parameter(description = "페이지 크기", example = "10") @RequestParam(defaultValue = "10") int size) {
         return ApiResponse.onSuccess(
                 certificationService.searchCertByCategory(
-                        user != null ? user.getUser() : null,
+                        user != null ? user : null,
                         keyword,
                         categoryIds,
                         page,
@@ -113,13 +113,13 @@ public class CertificationController {
     @GetMapping("/monthly")
     @Operation(summary = "월별 자격증 일정 조회", description = "월별 + 카테고리별 자격증 일정을 조회합니다.")
     public ApiResponse<List<CertScheduleDTO.MyCertScheduleResponse>> viewMonthlyCertByUser(
-            @Parameter(hidden = true) @CurrentUser CustomUserDetails user,
+            @Parameter(hidden = true) @CurrentUser User user,
             @Parameter(description = "조회 연도", example = "2025") @RequestParam int year,
             @Parameter(description = "조회 월", example = "9") @RequestParam int month,
             @Parameter(description = "카테고리 ID", example = "13") @RequestParam(required = false) Long categoryId,
             @Parameter(description = "검색 키워드", example = "SQLD") @RequestParam(required = false) String searchKeyword) {
         return ApiResponse.onSuccess(
-                certificationService.viewMonthlyCertByUser(user.getUser(), YearMonth.of(year, month), categoryId, searchKeyword),
+                certificationService.viewMonthlyCertByUser(user, YearMonth.of(year, month), categoryId, searchKeyword),
                 SuccessCode.OK
         );
     }
@@ -131,13 +131,13 @@ public class CertificationController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "UNAUTHORIZED_USER - 인증되지 않은 사용자")
     })
     public ApiResponse<List<CertScheduleDTO.MyCertScheduleResponse>> viewCertScheduleByDay(
-            @Parameter(hidden = true) @CurrentUser CustomUserDetails user,
+            @Parameter(hidden = true) @CurrentUser User user,
             @Parameter(description = "조회 시작일", example = "2025-09-01") @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
             @Parameter(description = "조회 종료일", example = "2025-09-30") @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end,
             @Parameter(description = "카테고리 ID", example = "13") @RequestParam(required = false) Long categoryId,
             @Parameter(description = "검색 키워드", example = "SQLD") @RequestParam(required = false) String searchKeyword) {
         return ApiResponse.onSuccess(
-                certificationService.viewCertScheduleByDay(user.getUser(), start, end, categoryId, searchKeyword),
+                certificationService.viewCertScheduleByDay(user, start, end, categoryId, searchKeyword),
                 SuccessCode.OK
         );
     }
@@ -150,13 +150,13 @@ public class CertificationController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "CATEGORY_SELECTION_LIMIT_EXCEEDED - 카테고리를 너무 많이 선택")
     })
     public ApiResponse<CertDTO.PageDTO<CertDTO.CertListViewResponse>> getRecentCertByCategory(
-            @Parameter(hidden = true) @CurrentUser CustomUserDetails user,
+            @Parameter(hidden = true) @CurrentUser User user,
             @Parameter(description = "카테고리 ID 배열", example = "[1,2,3]") @RequestParam(required = false) Long[] categoryIds,
             @Parameter(description = "페이지 번호(0부터 시작)", example = "0") @RequestParam(defaultValue = "0") int page,
             @Parameter(description = "페이지 크기", example = "10") @RequestParam(defaultValue = "10") int size) {
         return ApiResponse.onSuccess(
                 certificationService.getRecentCertByCategory(
-                        user != null ? user.getUser() : null,
+                        user != null ? user : null,
                         categoryIds,
                         page,
                         size
@@ -172,13 +172,13 @@ public class CertificationController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "CATEGORY_SELECTION_LIMIT_EXCEEDED - 카테고리를 너무 많이 선택")
     })
     public ApiResponse<CertDTO.PageDTO<CertDTO.CertListViewResponse>> getTopCertByCategory(
-            @Parameter(hidden = true) @CurrentUser CustomUserDetails user,
+            @Parameter(hidden = true) @CurrentUser User user,
             @Parameter(description = "카테고리 ID 배열", example = "[1,2,3]") @RequestParam(required = false) Long[] categoryIds,
             @Parameter(description = "페이지 번호(0부터 시작)", example = "0") @RequestParam(defaultValue = "0") int page,
             @Parameter(description = "페이지 크기", example = "10") @RequestParam(defaultValue = "10") int size) {
         return ApiResponse.onSuccess(
                 certificationService.getTopCertByCategory(
-                        user != null ? user.getUser() : null,
+                        user != null ? user : null,
                         categoryIds,
                         page,
                         size
@@ -192,7 +192,7 @@ public class CertificationController {
 
     // 회원-자격증 스크랩 관계 등록
     @PostMapping("/scrap/{certificationId}")
-    public ApiResponse<Void> saveScrapInfo(User user,
+    public ApiResponse<Void> saveScrapInfo(@CurrentUser User user,
                                            @PathVariable(value = "certificationId") Long certificationId) {
         certificationService.saveScrapInfo(user, certificationId);
         return ApiResponse.onSuccess(null, SuccessCode.CERT_SCRAP_SAVED);
@@ -201,7 +201,7 @@ public class CertificationController {
 
     // 회원-자격증 스크랩 관계 삭제
     @DeleteMapping("/scrap/{certificationId}")
-    public ApiResponse<Void> deleteScrapInfo(User user,
+    public ApiResponse<Void> deleteScrapInfo(@CurrentUser User user,
                                              @PathVariable(value = "certificationId") Long certificationId) {
         certificationService.deleteScrapInfo(user, certificationId);
         return ApiResponse.onSuccess(null, SuccessCode.CERT_SCRAP_DELETED);
