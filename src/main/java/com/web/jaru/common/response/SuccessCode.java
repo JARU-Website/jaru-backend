@@ -20,6 +20,7 @@ public enum SuccessCode implements BaseCode {
     POST_DELETED(HttpStatus.NO_CONTENT, "POST-SUCCESS-204-01", "게시글 정보가 삭제되었습니다."),
     POST_LIKE_SAVED(HttpStatus.CREATED, "POST-SUCCESS-201-02", "게시글 좋아요 정보가 저장되었습니다."),
     POST_LIKE_DELETED(HttpStatus.NO_CONTENT, "POST-SUCCESS-204-02", "게시글 좋아요 정보가 삭제되었습니다."),
+    POLL_VOTE_UPSERTED(HttpStatus.CREATED, "POLL-SUCCESS-201-01", "투표 응답 정보가 저장되었습니다."),
     COMMENT_SAVED(HttpStatus.CREATED, "COMMENT-SUCCESS-201-01", "댓글 정보가 저장되었습니다."),
     COMMENT_DELETED(HttpStatus.NO_CONTENT, "COMMENT-SUCCESS-204-01", "댓글 정보가 삭제되었습니다."),
     COMMENT_LIKE_SAVED(HttpStatus.CREATED, "COMMENT-SUCCESS-201-02", "댓글 좋아요 정보가 저장되었습니다."),

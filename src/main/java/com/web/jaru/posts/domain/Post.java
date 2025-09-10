@@ -2,6 +2,7 @@ package com.web.jaru.posts.domain;
 
 import com.web.jaru.BaseTimeEntity;
 import com.web.jaru.certifications.domain.CertCategory;
+import com.web.jaru.post_poll.domain.Poll;
 import com.web.jaru.users.domain.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -61,9 +62,14 @@ public class Post extends BaseTimeEntity {
     @JoinColumn(name = "cert_category_id") // FK 제약이 없어도 무방, 있으면 그대로 사용
     private CertCategory certCategory;
 
+    @OneToOne(mappedBy = "post", cascade = CascadeType.REMOVE)
+    private Poll poll;
+
     public void plusLikeCount() { this.likeCount++; }
 
-    public void minusLikeCount() { this.likeCount--; }
+    public void minusLikeCount() {
+        if(this.likeCount > 0) this.likeCount--;
+    }
 
     // 필드 수정
     public void changeTitle(String title) { this.title = title; }
@@ -71,6 +77,10 @@ public class Post extends BaseTimeEntity {
     public void changePostCategory(PostCategory postCategory) { this.postCategory = postCategory; }
     public void changeCertCategory(CertCategory certCategory) { this.certCategory = certCategory; }
     public void changeDeletedBy(User deletedBy) { this.deletedBy = deletedBy; }
+
+    public void setPoll(Poll poll) {
+        this.poll = poll;
+    }
 
     /* --- 소프트 삭제 --- */
     public void softDelete() {

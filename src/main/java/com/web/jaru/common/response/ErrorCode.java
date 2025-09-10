@@ -19,6 +19,9 @@ public enum ErrorCode implements BaseCode {
     CERTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "CERT-001", "해당 자격증이 존재하지 않습니다."),
     EXIST_USER_SCRAP_CERT(HttpStatus.CONFLICT, "CERT-002", "이미 존재하는 자격증 스크랩 정보입니다."),
     NOT_FOUND_USER_SCRAP_CERT(HttpStatus.NO_CONTENT, "CERT-003", "존재하지 않는 자격증 스크랩 정보입니다."),
+
+    CATEGORY_SELECTION_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "CERT400", "카테고리는 최대 3개까지만 선택할 수 있습니다."),
+
     CERT_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "CERT-004", "존재하지 않는 자격증 카테고리입니다."),
 
     // 커뮤니티 에러
@@ -29,6 +32,9 @@ public enum ErrorCode implements BaseCode {
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "COMMENT-001", "존재하지 않는 댓글입니다."),
     COMMENT_BAD_REQUEST(HttpStatus.BAD_REQUEST, "COMMENT-002", "유효하지 않은 댓글입니다."),
     EXIST_POLL_BY_POST(HttpStatus.CONFLICT, "POLL-001", "이미 존재하는 투표입니다."),
+    POLL_NOT_FOUND(HttpStatus.NOT_FOUND, "POLL404", "해당 투표를 찾을 수 없습니다."),
+    POLL_MAX_SELECTION_EXCEEDED(HttpStatus.BAD_REQUEST,"POLL400", "선택 가능한 투표 옵션 개수는 최대 3개입니다."),
+    INVALID_POLL_OPTION(HttpStatus.BAD_REQUEST,"POLL400", "투표옵션의 소속 투표가 올바르지 않습니다."),
 
     // 사용자 관련
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "ACCOUNT404", "사용자를 찾을 수 없습니다."),
