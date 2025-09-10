@@ -37,5 +37,7 @@ public class PollOption extends BaseTimeEntity {
 
     /* --- 필드 수정 --- */
     public void plusVoteCount() { this.voteCount++; }
-    public void minusVoteCount() { this.voteCount--; }
+    public void minusVoteCount() {
+        if (this.voteCount > 0) this.voteCount--;
+    }
 }

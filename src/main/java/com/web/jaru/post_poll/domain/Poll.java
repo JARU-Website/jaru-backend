@@ -49,5 +49,7 @@ public class Poll extends BaseTimeEntity {
     /* --- 필드 수정 --- */
     public void plusTotalVoteCount() { this.totalVoteCount++; }
 
-    public void minusTotalVoteCount() { this.totalVoteCount--; }
+    public void minusTotalVoteCount() {
+        if (this.totalVoteCount > 0) this.totalVoteCount--;
+    }
 }
