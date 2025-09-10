@@ -34,6 +34,7 @@ dependencies {
 	runtimeOnly 'com.mysql:mysql-connector-j'
 
 	// HttpClient5
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.apache.httpcomponents.client5:httpclient5'
 
 	// Querydsl 추가
@@ -56,24 +57,26 @@ dependencies {
 	// coolsms
 	implementation 'net.nurigo:sdk:4.3.0'
 
+
+
 	// oauth
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 }
 
+def querydslDir = "$buildDir/generated/sources/annotationProcessor/java/main"
+
 sourceSets {
 	main {
 		java {
-			srcDirs = ["$projectDir/src/main/java", "$projectDir/build/generated"]
+			srcDirs = ["$projectDir/src/main/java", querydslDir]
 		}
 	}
 }
 
-// QueryDSL 설정
-def querydslSrcDir = 'src/main/generated'
-
 tasks.withType(JavaCompile) {
-	options.generatedSourceOutputDirectory = file(querydslSrcDir)
+	options.annotationProcessorGeneratedSourcesDirectory = file(querydslDir)
 }
+
 
 
 tasks.named('test') {

@@ -22,13 +22,13 @@ public class QCertification extends EntityPathBase<Certification> {
 
     public static final QCertification certification = new QCertification("certification");
 
+    public final NumberPath<Long> applicantsNum = createNumber("applicantsNum", Long.class);
+
     public final QCertCategory certCategory;
 
     public final StringPath certType = createString("certType");
 
     public final NumberPath<Short> difficulty = createNumber("difficulty", Short.class);
-
-    public final StringPath fee = createString("fee");
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
