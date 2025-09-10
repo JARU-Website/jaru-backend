@@ -50,6 +50,6 @@ public final class PostResponse {
             String text,
             int voteCount,
             String percentage,
-            boolean loginUserVoted
+            boolean loginUserSelected
     ) { }
 }

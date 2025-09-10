@@ -67,7 +67,9 @@ public class Post extends BaseTimeEntity {
 
     public void plusLikeCount() { this.likeCount++; }
 
-    public void minusLikeCount() { this.likeCount--; }
+    public void minusLikeCount() {
+        if(this.likeCount > 0) this.likeCount--;
+    }
 
     // 필드 수정
     public void changeTitle(String title) { this.title = title; }
