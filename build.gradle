@@ -34,7 +34,7 @@ dependencies {
 	runtimeOnly 'com.mysql:mysql-connector-j'
 
 	// HttpClient5
-	implementation 'org.apache.httpcomponents.client5:httpclient5:5.3.1'
+	implementation 'org.apache.httpcomponents.client5:httpclient5'
 
 	// Querydsl 추가
 	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'

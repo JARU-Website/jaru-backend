@@ -7,7 +7,6 @@ import com.web.jaru.common.exception.CustomException;
 import com.web.jaru.common.response.ErrorCode;
 import com.web.jaru.post_like.domain.PostLike;
 import com.web.jaru.post_like.repository.PostLikeRepository;
-import com.web.jaru.post_poll.dto.request.PollRequest;
 import com.web.jaru.post_poll.service.PollService;
 import com.web.jaru.posts.controller.dto.request.PostRequest;
 import com.web.jaru.posts.controller.dto.response.PostResponse;

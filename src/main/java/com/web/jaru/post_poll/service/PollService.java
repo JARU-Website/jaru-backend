@@ -4,21 +4,22 @@ import com.web.jaru.common.exception.CustomException;
 import com.web.jaru.common.response.ErrorCode;
 import com.web.jaru.post_poll.domain.Poll;
 import com.web.jaru.post_poll.domain.PollOption;
-import com.web.jaru.post_poll.dto.request.PollRequest;
+import com.web.jaru.post_poll.domain.PollVote;
 import com.web.jaru.post_poll.repository.PollOptionRepository;
 import com.web.jaru.post_poll.repository.PollRepository;
 import com.web.jaru.post_poll.repository.PollVoteRepository;
+import com.web.jaru.posts.controller.dto.request.PostRequest;
 import com.web.jaru.posts.controller.dto.response.PostResponse;
 import com.web.jaru.posts.domain.Post;
-import com.web.jaru.posts.domain.PostCategory;
 import com.web.jaru.posts.repository.PostRepository;
 import com.web.jaru.users.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -28,10 +29,11 @@ public class PollService {
     private final PostRepository postRepository;
     private final PollRepository pollRepository;
     private final PollVoteRepository pollVoteRepository;
+    private final PollOptionRepository pollOptionRepository;
 
     // 투표 생성
     @Transactional
-    public Long createPoll(Long postId, PollRequest.Create req) {
+    public Long createPoll(Long postId, PostRequest.PollCreate req) {
 
         Post findPost = getPostOrThrow(postId);
 
@@ -59,7 +61,7 @@ public class PollService {
     // 투표 조회
     public PostResponse.Poll findPoll(Post post, User loginUser) {
 
-        Poll findPoll = getPollOrThrow(post);
+        Poll findPoll = getPollByPostOrThrow(post);
 
         final int total = findPoll.getTotalVoteCount();
 
@@ -98,6 +100,97 @@ public class PollService {
         );
     }
 
+    // 투표 응답 갱신
+    @Transactional
+    public PostResponse.Poll upsertVote(PostRequest.VoteUpsert req, User loginUser) {
+
+        Poll findPoll = getPollOrThrow(req.pollId());
+
+        List<Long> reqOptionIds = req.optionIds();
+        if (reqOptionIds == null) {
+            throw new CustomException(ErrorCode.INVALID_REQUEST);
+        }
+
+        // 요청 정제
+        List<Long> optionIds = reqOptionIds.stream()
+                .filter(Objects::nonNull)
+                .distinct()
+                .toList();
+
+        if (optionIds.size() > 3) {
+            throw new CustomException(ErrorCode.POLL_MAX_SELECTION_EXCEEDED);
+        }
+
+        // 설문 소속 검증
+        List<PollOption> pollOptions = pollOptionRepository.findAllByPoll(findPoll);
+        Map<Long, PollOption> optionMap = pollOptions.stream()
+                .collect(Collectors.toMap(PollOption::getId, Function.identity()));
+
+        for (Long optionId : optionIds) {
+            if (!optionMap.containsKey(optionId)) {
+                throw new CustomException(ErrorCode.INVALID_POLL_OPTION);
+            }
+        }
+
+        // 기존 투표 응답 삭제
+        pollVoteRepository.deleteByPollAndUser(findPoll, loginUser);
+        for (PollOption option : pollOptions) {
+            option.minusVoteCount();
+            findPoll.minusTotalVoteCount();
+        }
+
+        // 투표 응답 저장
+        List<PollVote> savedPollVotes = new ArrayList<>();
+
+        for (int i = 0; i < optionIds.size(); i++) {
+            Long optId = optionIds.get(i);
+            PollOption opt = optionMap.get(optId);
+            opt.plusVoteCount();
+            findPoll.plusTotalVoteCount();
+
+            PollVote pv = PollVote.builder()
+                    .poll(findPoll)
+                    .option(opt)
+                    .user(loginUser)
+                    .build();
+            savedPollVotes.add(pv);
+        }
+
+        if (!savedPollVotes.isEmpty()) {
+            pollVoteRepository.saveAll(savedPollVotes);
+        }
+
+        // ======== 응답 구성 =========
+        Set<Long> selectedOptionIds = new HashSet<>(optionIds);
+
+        List<PostResponse.Option> optionResponseList = new ArrayList<>();
+        for (PollOption option: pollOptions) {
+            String percentage = formatPercent(option.getVoteCount(), findPoll.getTotalVoteCount());
+            boolean selected = selectedOptionIds.contains(option.getId());
+
+            optionResponseList.add(new PostResponse.Option(
+                    option.getId(),
+                    option.getText(),
+                    option.getVoteCount(),
+                    percentage,
+                    selected
+            ));
+        }
+
+        return new PostResponse.Poll(
+                findPoll.getId(),
+                findPoll.getTitle(),
+                findPoll.getTotalVoteCount(),
+                optionResponseList
+        );
+    }
+
+    private String formatPercent(int count, int total) {
+        if (total == 0) return "0.00";
+        double p = (count * 100.0) / total;
+        return String.format(java.util.Locale.US, "%.2f", p);
+    }
+
 
     /* --- 예외 처리 --- */
 
@@ -106,7 +199,12 @@ public class PollService {
                 .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
     }
 
-    private Poll getPollOrThrow(Post post) {
+    private Poll getPollOrThrow(Long pollId) {
+        return pollRepository.findById(pollId)
+                .orElseThrow(() -> new CustomException(ErrorCode.POLL_NOT_FOUND));
+    }
+
+    private Poll getPollByPostOrThrow(Post post) {
         return pollRepository.findByPost(post)
                 .orElseThrow(() -> new CustomException(ErrorCode.POLL_NOT_FOUND));
     }

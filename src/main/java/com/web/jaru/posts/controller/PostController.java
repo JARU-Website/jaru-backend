@@ -4,6 +4,7 @@ import com.web.jaru.common.annotation.CurrentUser;
 import com.web.jaru.common.dto.response.PageDto;
 import com.web.jaru.common.response.ApiResponse;
 import com.web.jaru.common.response.SuccessCode;
+import com.web.jaru.post_poll.service.PollService;
 import com.web.jaru.posts.controller.dto.request.CommentRequest;
 import com.web.jaru.posts.controller.dto.request.PostRequest;
 import com.web.jaru.posts.controller.dto.response.CommentResponse;
@@ -26,6 +27,7 @@ public class PostController {
 
     private final PostService postService;
     private final CommentService commentService;
+    private final PollService pollService;
 
     // 게시글 생성
     @PostMapping("/create")
@@ -152,7 +154,7 @@ public class PostController {
     // 댓글 좋아요 저장
     @PostMapping("comments/like/{commentId}")
     public ApiResponse<Void> saveCommentLike(@CurrentUser CustomUserDetails userDetails,
-                                          @PathVariable(value = "commentId") Long commentId) {
+                                             @PathVariable(value = "commentId") Long commentId) {
 
         commentService.saveCommentLike(commentId, userDetails.getUser().getId());
 
@@ -162,7 +164,7 @@ public class PostController {
     // 댓글 좋아요 취소
     @DeleteMapping("comments/like/{commentId}")
     public ApiResponse<Void> deleteCommentLike(@CurrentUser CustomUserDetails userDetails,
-                                            @PathVariable(value = "commentId") Long commentId) {
+                                               @PathVariable(value = "commentId") Long commentId) {
 
         commentService.deleteCommentLike(commentId, userDetails.getUser().getId());
 
@@ -171,5 +173,12 @@ public class PostController {
 
     /* --- 투표 API --- */
 
+    // 투표 응답 갱신
+    @PostMapping("/vote")
+    public ApiResponse<PostResponse.Poll> upsertVote(@CurrentUser CustomUserDetails userDetails,
+                                        @Valid @RequestBody PostRequest.VoteUpsert req) {
+
+        return ApiResponse.onSuccess(pollService.upsertVote(req, userDetails.getUser()), SuccessCode.POLL_VOTE_UPSERTED);
+    }
 
 }
