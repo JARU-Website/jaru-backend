@@ -40,6 +40,7 @@ public final class PostResponse {
     public record Poll(
             Long pollId,
             String title,
+            boolean allowMultiple,
             int totalVoteCount,
             List<Option> options
     ) { }

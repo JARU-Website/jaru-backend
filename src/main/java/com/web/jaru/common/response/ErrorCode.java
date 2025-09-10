@@ -33,7 +33,7 @@ public enum ErrorCode implements BaseCode {
     COMMENT_BAD_REQUEST(HttpStatus.BAD_REQUEST, "COMMENT-002", "유효하지 않은 댓글입니다."),
     EXIST_POLL_BY_POST(HttpStatus.CONFLICT, "POLL-001", "이미 존재하는 투표입니다."),
     POLL_NOT_FOUND(HttpStatus.NOT_FOUND, "POLL404", "해당 투표를 찾을 수 없습니다."),
-    POLL_MAX_SELECTION_EXCEEDED(HttpStatus.BAD_REQUEST,"POLL400", "선택 가능한 투표 옵션 개수는 최대 3개입니다."),
+    POLL_MAX_SELECTION_EXCEEDED(HttpStatus.BAD_REQUEST,"POLL400", "선택 가능한 투표 옵션 개수를 초과했습니다."),
     INVALID_POLL_OPTION(HttpStatus.BAD_REQUEST,"POLL400", "투표옵션의 소속 투표가 올바르지 않습니다."),
 
     // 사용자 관련
