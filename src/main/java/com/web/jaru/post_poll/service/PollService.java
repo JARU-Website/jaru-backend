@@ -132,11 +132,17 @@ public class PollService {
             }
         }
 
-        // 기존 투표 응답 삭제
-        pollVoteRepository.deleteByPollAndUser(findPoll, loginUser);
-        for (PollOption option : pollOptions) {
-            option.minusVoteCount();
+        // 기존 투표 응답 조회 후 카운트 차감
+        List<PollVote> prevVotes = pollVoteRepository.findAllByPollAndUser(findPoll, loginUser);
+        for (PollVote prev : prevVotes) {
+            PollOption prevOpt = prev.getOption();
+            prevOpt.minusVoteCount();
             findPoll.minusTotalVoteCount();
+        }
+
+        // 기존 투표 응답 삭제
+        if (!prevVotes.isEmpty()) {
+            pollVoteRepository.deleteByPollAndUser(findPoll, loginUser);
         }
 
         // 투표 응답 저장
