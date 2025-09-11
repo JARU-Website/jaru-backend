@@ -36,9 +36,8 @@ public class PostService {
 
     // 게시글 생성
     @Transactional
-    public Long createPost(Long loginUserId, PostRequest.Create req) {
+    public Long createPost(User loginUser, PostRequest.Create req) {
 
-        User findUser = getUserOrThrow(loginUserId);
         // 필수 : 게시글 카테고리
         PostCategory findPostCategory = getPostCategoryOrThrow(req.postCategoryId());
 
@@ -51,7 +50,7 @@ public class PostService {
         Post post = Post.builder()
                 .title(req.title())
                 .content(req.content())
-                .writer(findUser)
+                .writer(loginUser)
                 .postCategory(findPostCategory)
                 .certCategory(findCertCategory)
                 .build();
@@ -134,13 +133,12 @@ public class PostService {
 
     // 게시글 수정
     @Transactional
-    public void editPost(Long postId, Long loginUserId, PostRequest.PatchUpdate req) {
+    public void editPost(Long postId, User loginUser, PostRequest.PatchUpdate req) {
 
         Post findPost = getPostOrThrow(postId);
-        User findUser = getUserOrThrow(loginUserId);
 
         // 권한 확인
-        checkEditPost(findUser, findPost);
+        checkEditPost(loginUser, findPost);
 
         // 최소 1개 이상 변경값 확인
         if (req.title() == null && req.content() == null
@@ -167,15 +165,14 @@ public class PostService {
 
     // 게시글 삭제
     @Transactional
-    public void deletePost(Long postId, Long loginUserId) {
+    public void deletePost(Long postId, User loginUser) {
 
         Post findPost = getPostOrThrow(postId);
-        User findUser = getUserOrThrow(loginUserId);
 
         // 권한 확인
-        checkEditPost(findUser, findPost);
+        checkEditPost(loginUser, findPost);
 
-        findPost.changeDeletedBy(findUser);
+        findPost.changeDeletedBy(loginUser);
         findPost.softDelete();
     }
 
@@ -194,18 +191,17 @@ public class PostService {
 
     // 게시글 좋아요
     @Transactional
-    public void savePostLike(Long postId, Long loginUserId) {
+    public void savePostLike(Long postId, User loginUser) {
 
         Post findPost = getPostOrThrow(postId);
-        User findUser = getUserOrThrow(loginUserId);
 
         // Column unique 제약조건 핸들링 (중복 컬럼 검증)
-        if (postLikeRepository.existsByUserAndPost(findUser, findPost)) {
+        if (postLikeRepository.existsByUserAndPost(loginUser, findPost)) {
             throw new CustomException(ErrorCode.EXIST_POST_LIKE);
         }
 
         PostLike postLike = PostLike.builder()
-                .user(findUser)
+                .user(loginUser)
                 .post(findPost)
                 .build();
 
@@ -216,22 +212,16 @@ public class PostService {
 
     // 게시글 좋아요 취소
     @Transactional
-    public void deletePostLike(Long postId, Long loginUserId) {
-
-        User findUser = getUserOrThrow(loginUserId);
+    public void deletePostLike(Long postId, User loginUser) {
 
         Post findPost = getPostOrThrow(postId);
 
-        postLikeRepository.deleteByUserAndPost(findUser, findPost);
+        postLikeRepository.deleteByUserAndPost(loginUser, findPost);
 
         findPost.minusLikeCount();
     }
 
     /* --- 예외 처리 --- */
-    private User getUserOrThrow(Long loginUserId) {
-        return userRepository.findById(loginUserId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
-    }
 
     private PostCategory getPostCategoryOrThrow(Long postCategoryId) {
         return postCategoryRepository.findById(postCategoryId)
