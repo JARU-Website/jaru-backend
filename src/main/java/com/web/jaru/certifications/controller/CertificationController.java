@@ -207,4 +207,21 @@ public class CertificationController {
         return ApiResponse.onSuccess(null, SuccessCode.CERT_SCRAP_DELETED);
     }
 
+    // 스크랩한 자격증 목록 조회
+    @GetMapping("/scrap/list")
+    @Operation(summary = "카테고리별 스크랩한 자격증 목록 조회", description = "카테고리별 스크랩한 자격증 목록을 최신순으로 조회합니다. 여러 카테고리 선택 가능 (최대 4개)")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "CATEGORY_SELECTION_LIMIT_EXCEEDED - 카테고리를 너무 많이 선택")
+    })
+    public ApiResponse<CertDTO.PageDTO<CertDTO.CertListViewResponse>> getScrapCertList(
+            @Parameter(hidden = true) @CurrentUser User user,
+            @Parameter(description = "카테고리 ID 리스트") @RequestParam(required = false) List<Long> certCategoryIds,
+            @Parameter(description = "페이지 번호(0부터 시작)", example = "0") @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "페이지 크기", example = "15") @RequestParam(defaultValue = "10") int size) {
+        return ApiResponse.onSuccess(
+                certificationService.findScrapList(certCategoryIds, user != null ? user : null, page, size), SuccessCode.OK
+        );
+    }
+
 }

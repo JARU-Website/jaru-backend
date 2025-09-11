@@ -67,7 +67,7 @@ public class PostService {
     }
 
     // 게시글 목록 조회 (최신순)
-    public PageDto<PostResponse.Summary> findNewest(Long postCategoryId, Long certCategoryId, Pageable pageable) {
+    public PageDto<PostResponse.Summary> findNewestList(Long postCategoryId, Long certCategoryId, Pageable pageable) {
 
         PostCategory postCategory = (postCategoryId != null) ? getPostCategoryOrThrow(postCategoryId) : null;
         CertCategory  certCategory = (certCategoryId != null) ? getCertCategoryOrThrow(certCategoryId) : null;
@@ -90,7 +90,7 @@ public class PostService {
     }
 
     // 게시글 목록 조회 (추천순)
-    public PageDto<PostResponse.Summary> findMostLiked(Long postCategoryId, Long certCategoryId, Pageable pageable) {
+    public PageDto<PostResponse.Summary> findMostLikedList(Long postCategoryId, Long certCategoryId, Pageable pageable) {
 
         PostCategory postCategory = (postCategoryId != null) ? getPostCategoryOrThrow(postCategoryId) : null;
         CertCategory  certCategory = (certCategoryId != null) ? getCertCategoryOrThrow(certCategoryId) : null;

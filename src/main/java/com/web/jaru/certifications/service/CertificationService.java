@@ -1,8 +1,10 @@
 package com.web.jaru.certifications.service;
 
+import com.web.jaru.certifications.domain.CertCategory;
 import com.web.jaru.certifications.domain.Certification;
 import com.web.jaru.certifications.dto.CertDTO;
 import com.web.jaru.certifications.dto.CertScheduleDTO;
+import com.web.jaru.certifications.repository.CertCategoryRepository;
 import com.web.jaru.certifications.repository.CertScheduleRepository;
 import com.web.jaru.certifications.repository.CertificationRepository;
 import com.web.jaru.common.exception.CustomException;
@@ -26,11 +28,10 @@ import java.util.List;
 public class CertificationService {
 
     private final CertificationRepository certificationRepository;
-    // 자격증 스크랩
     private final UserScrapCertRepository userScrapCertRepository;
-
     private final CertScheduleRepository certScheduleRepository;
     private final UserSearchRepository userSearchRepository;
+    private final CertCategoryRepository certCategoryRepository;
 
     // ================= MY 자격증 조회 ==================
     // 월별 내 자격증 조회
@@ -142,5 +143,20 @@ public class CertificationService {
         }
 
         userScrapCertRepository.deleteByUserAndCertification(user, findCertification);
+    }
+
+    public CertDTO.PageDTO<CertDTO.CertListViewResponse> findScrapList(List<Long> certCategoryIds, User user, int page, int size) {
+
+        if (certCategoryIds != null && !certCategoryIds.isEmpty()) return findScrapListWithCategory(certCategoryIds, user, page, size);
+        return userScrapCertRepository.findScrapCertList(user.getId(), page, size);
+    }
+
+    public CertDTO.PageDTO<CertDTO.CertListViewResponse> findScrapListWithCategory(List<Long> certCategoryIds, User user, int page, int size) {
+
+        if (certCategoryIds != null && certCategoryIds.size() > 4) {
+            throw new CustomException(ErrorCode.CATEGORY_SELECTION_LIMIT_EXCEEDED);
+        }
+
+        return userScrapCertRepository.findScrapCertListWithCategory(certCategoryIds, user.getId(), page, size);
     }
 }
