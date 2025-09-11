@@ -85,6 +85,15 @@ public class PostController {
         return ApiResponse.onSuccess(null, SuccessCode.POST_DELETED);
     }
 
+    // 본인이 작성한 게시글 조회(최신순)
+        @GetMapping("/list/newest")
+        public ApiResponse<PageDto<PostResponse.Summary>> findMyNewestPostList(@RequestParam(name = "postCategoryId") Long postCategoryId, @RequestParam(name = "certCategoryId", required = false) Long certCategoryId,
+                                                                             @PageableDefault(page = 0, size = 10)  Pageable pageable) {
+
+            return ApiResponse.onSuccess(postService.findMyNewestList(postCategoryId, certCategoryId, pageable), SuccessCode.OK);
+        }
+
+
     /* --- 게시글 좋아요 API --- */
 
     // 게시글 좋아요 저장

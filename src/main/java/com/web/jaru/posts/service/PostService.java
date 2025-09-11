@@ -131,6 +131,28 @@ public class PostService {
         return toPostDto(findPost, poll, isLiked);
     }
 
+    public PageDto<PostResponse.Summary> findMyNewestList(Long postCategoryId, Long certCategoryId, Pageable pageable) {
+
+        PostCategory postCategory = (postCategoryId != null) ? getPostCategoryOrThrow(postCategoryId) : null;
+        CertCategory  certCategory = (certCategoryId != null) ? getCertCategoryOrThrow(certCategoryId) : null;
+
+        Page<Post> page = postRepository.findNewest(postCategoryId, certCategoryId, pageable);
+
+        Page<PostResponse.Summary> result = page.map(p -> {
+            String postCategoryName = (postCategory != null)
+                    ? postCategory.getName()
+                    : (p.getPostCategory() != null ? p.getPostCategory().getName() : null);
+
+            String certCategoryName = (certCategory != null)
+                    ? certCategory.getName()
+                    : (p.getCertCategory() != null ? p.getCertCategory().getName() : null);
+
+            return toSummaryDto(p, postCategoryName, certCategoryName);
+        });
+
+        return PageDto.of(result);
+    }
+
     // 게시글 수정
     @Transactional
     public void editPost(Long postId, User loginUser, PostRequest.PatchUpdate req) {
@@ -251,6 +273,7 @@ public class PostService {
     }
 
     /* --- 엔티티 → 응답 DTO 매핑 --- */
+
     private PostResponse.Summary toSummaryDto(Post post, String postCategoryName, String certCategoryName) {
         return new PostResponse.Summary(
                 post.getId(),
@@ -270,6 +293,8 @@ public class PostService {
                 post.getId(),
                 post.getTitle(),
                 post.getContent(),
+                post.getPostCategory().getId(),
+                post.getCertCategory().getId(),
                 post.getPostCategory().getName(),
                 post.getCertCategory().getName(),
                 isLiked,
@@ -281,5 +306,4 @@ public class PostService {
                 post.getCreatedDate()
         );
     }
-
 }

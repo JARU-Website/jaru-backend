@@ -25,6 +25,8 @@ public final class PostResponse {
             Long postId,
             String title,
             String content,
+            Long postCategoryId,
+            Long certCategoryId,
             String postCategoryName,
             String certCategoryName,
             boolean isLiked,
