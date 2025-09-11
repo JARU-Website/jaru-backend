@@ -14,7 +14,7 @@ public final class PostRequest {
 
     // 게시글 생성
     public record Create(
-            @NotBlank @Size(max = 255) String title,
+            @NotBlank @Size(max = 100) String title,
             @NotBlank @Size(max = 3000) String content,
             @NotNull @Positive Long postCategoryId,
             @Positive Long certCategoryId,
@@ -24,7 +24,7 @@ public final class PostRequest {
     // 게시글 수정
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record PatchUpdate(
-            @Size(max = 255) String title,
+            @Size(max = 100) String title,
             @Size(max = 3000) String content,
             @Positive Long postCategoryId,
             @Positive Long certCategoryId
@@ -33,15 +33,15 @@ public final class PostRequest {
 
     // 투표 생성
     public record PollCreate(
-            String title,
+            @NotBlank @Size(max = 100) String title,
             boolean allowMultiple,
             @NotNull @Size(min = 2, max = 10) List<@NotBlank @Size(max = 100) String> options
     ) { }
 
     // 투표 옵션 추가
     public record PollEdit(
-            Long pollId,
-            String title,
+            @NotNull Long pollId,
+            @NotBlank @Size(max = 100) String title,
             @NotNull @Size(min = 2, max = 10) List<@NotBlank @Size(max = 100) String> options
     ) { }
 

@@ -24,6 +24,7 @@ public class Poll extends BaseTimeEntity {
     @Column(name = "poll_id")
     private Long id;
 
+    @Column(nullable = false, length = 100)
     private String title;
 
     @Builder.Default
