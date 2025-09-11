@@ -19,9 +19,7 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
 
-@Repository
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 class CertScheduleCustomRepositoryImpl implements CertScheduleCustomRepository {
 
     private final JPAQueryFactory jpaQueryFactory;

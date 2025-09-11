@@ -13,7 +13,7 @@ import static com.web.jaru.post_comment.domain.QComment.comment;
 import static com.web.jaru.users.domain.QUser.user;
 
 @RequiredArgsConstructor
-public class CommentCustomRepositoryImpl implements CommentCustomRepository{
+public class CommentCustomRepositoryImpl implements CommentCustomRepository {
 
     private final JPAQueryFactory queryFactory;
 
