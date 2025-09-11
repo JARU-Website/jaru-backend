@@ -32,7 +32,7 @@ public class CertificationService {
     private final CertScheduleRepository certScheduleRepository;
     private final UserSearchRepository userSearchRepository;
 
-    // ================= MY 자격증 조회 ==================
+    /* ---  MY 자격증 조회 --- */
     // 월별 내 자격증 조회
     @Transactional(readOnly = true)
     public List<CertScheduleDTO.MyCertScheduleResponse> viewMyMonthlyCert(User user, YearMonth yearMonth, boolean isAlarmed){
@@ -45,7 +45,7 @@ public class CertificationService {
         return certScheduleRepository.viewMyCertScheduleByDay(user,start,end,isAlarmed);
     }
 
-    // ================= 자격증 상세 조회 ==================
+    /* ---  자격증 상세 조회 --- */
     // id로 자격증 조회
     @Transactional(readOnly = true)
     public CertDTO.CertDetailResponse viewCertDetail(Long certificationId) {
@@ -76,7 +76,7 @@ public class CertificationService {
                     .toList();
     }
 
-    // ================= 월별 자격증 일정 조회 ==================
+    /* ---  월별 자격증 일정 조회 --- */
     // 월별 + 카테고리별 조회 및 검색
     @Transactional(readOnly = true)
     public List<CertScheduleDTO.MyCertScheduleResponse> viewMonthlyCertByUser(User user, YearMonth yearMonth, Long categoryId, String searchKeyword) {
@@ -89,7 +89,7 @@ public class CertificationService {
         return certScheduleRepository.viewCertScheduleByDay(user, start, end, categoryId, searchKeyword);
     }
 
-    // ================= 자격증 리스트 조회 ==================
+    /* ---  자격증 리스트 조회 --- */
     // 카테고리별로 조회, 여러 카테고리 선택 가능
     @Transactional(readOnly = true)
     public CertDTO.PageDTO<CertDTO.CertListViewResponse> getRecentCertByCategory(
