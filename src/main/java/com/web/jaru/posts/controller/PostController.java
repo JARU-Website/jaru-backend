@@ -174,11 +174,20 @@ public class PostController {
     /* --- 투표 API --- */
 
     // 투표 응답 갱신
-    @PostMapping("/vote")
+    @PostMapping("poll/vote")
     public ApiResponse<PostResponse.Poll> upsertVote(@CurrentUser CustomUserDetails userDetails,
                                         @Valid @RequestBody PostRequest.VoteUpsert req) {
 
         return ApiResponse.onSuccess(pollService.upsertVote(req, userDetails.getUser()), SuccessCode.POLL_VOTE_UPSERTED);
+    }
+
+    // 투표 옵션 추가
+    @PostMapping("/poll/edit")
+    public ApiResponse<Void> editPoll(@CurrentUser CustomUserDetails userDetails,
+                                      @Valid @RequestBody PostRequest.PollEdit req) {
+
+        pollService.editPoll(req, userDetails.getUser());
+        return ApiResponse.onSuccess(null, SuccessCode.POLL_UPDATED);
     }
 
 }

@@ -43,6 +43,7 @@ public class PollService {
         Poll poll = Poll.builder()
                 .title(req.title())
                 .post(findPost)
+                .allowMultiple(req.allowMultiple())
                 .build();
 
         poll.setPost(findPost);
@@ -95,6 +96,7 @@ public class PollService {
         return new PostResponse.Poll(
                 findPoll.getId(),
                 findPoll.getTitle(),
+                findPoll.isAllowMultiple(),
                 findPoll.getTotalVoteCount(),
                 optionList
         );
@@ -117,7 +119,11 @@ public class PollService {
                 .distinct()
                 .toList();
 
-        if (optionIds.size() > 3) {
+        // 다중 선택 불가일 경우
+        if (!findPoll.isAllowMultiple() && optionIds.size() > 1) {
+            throw new CustomException(ErrorCode.POLL_MAX_SELECTION_EXCEEDED);
+        }
+        if (findPoll.isAllowMultiple() && optionIds.size() > 3) {
             throw new CustomException(ErrorCode.POLL_MAX_SELECTION_EXCEEDED);
         }
 
@@ -166,7 +172,7 @@ public class PollService {
             pollVoteRepository.saveAll(savedPollVotes);
         }
 
-        // ======== 응답 구성 =========
+        // 응답 구성
         Set<Long> selectedOptionIds = new HashSet<>(optionIds);
 
         List<PostResponse.Option> optionResponseList = new ArrayList<>();
@@ -186,9 +192,33 @@ public class PollService {
         return new PostResponse.Poll(
                 findPoll.getId(),
                 findPoll.getTitle(),
+                findPoll.isAllowMultiple(),
                 findPoll.getTotalVoteCount(),
                 optionResponseList
         );
+    }
+
+    // 투표 옵션 추가 및 제목 변경
+    @Transactional
+    public void editPoll(PostRequest.PollEdit req, User loginUser) {
+
+        // 응답 추가
+        Poll findPoll = getPollOrThrow(req.pollId());
+
+        // 권한 확인
+        checkEditPoll(loginUser, findPoll);
+
+        if (req.title() != null) {
+            findPoll.changeTitle(req.title());
+        }
+
+        // 투표 옵션 저장 및 연관관계 설정
+        for (String text : req.options()) {
+            PollOption pollOption = PollOption.builder()
+                    .text(text)
+                    .build();
+            pollOption.setPoll(findPoll);
+        }
     }
 
     private String formatPercent(int count, int total) {
@@ -218,6 +248,12 @@ public class PollService {
     private void checkExitsByPostId(Long postId) {
         if (pollRepository.existsByPostId(postId)) {
             throw new CustomException(ErrorCode.EXIST_POLL_BY_POST);
+        }
+    }
+
+    private void checkEditPoll(User user, Poll poll) {
+        if (!poll.getPost().getWriter().getId().equals(user.getId())) {
+            throw new CustomException(ErrorCode.PERMISSION_DENIED);
         }
     }
 }
