@@ -14,4 +14,6 @@ public interface PostCustomRepository {
     List<Post> findTopMostLiked(int limit);
 
     List<Post> findBySearchWord(String word);
+
+    Page<Post> findMyNewest(Long userId, Long postCategoryId, Long certCategoryId, Pageable pageable);
 }

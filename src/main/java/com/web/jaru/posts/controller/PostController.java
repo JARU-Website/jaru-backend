@@ -41,7 +41,7 @@ public class PostController {
     }
 
     // 게시글 목록 조회 (최신순)
-    @GetMapping("/list/newest")
+    @GetMapping("/newest")
     public ApiResponse<PageDto<PostResponse.Summary>> findNewestPostList(@RequestParam(name = "postCategoryId") Long postCategoryId, @RequestParam(name = "certCategoryId", required = false) Long certCategoryId,
                                                                          @PageableDefault(page = 0, size = 10)  Pageable pageable) {
 
@@ -49,7 +49,7 @@ public class PostController {
     }
 
     // 게시글 목록 조회 (추천순)
-    @GetMapping("/list/most-liked")
+    @GetMapping("/most-liked")
     public ApiResponse<PageDto<PostResponse.Summary>> findMostLikedPostList(@RequestParam(name = "postCategoryId") Long postCategoryId, @RequestParam(name = "certCategoryId", required = false) Long certCategoryId,
                                                                             @PageableDefault(page = 0, size = 10)  Pageable pageable) {
 
@@ -86,12 +86,13 @@ public class PostController {
     }
 
     // 본인이 작성한 게시글 조회(최신순)
-        @GetMapping("/list/newest")
-        public ApiResponse<PageDto<PostResponse.Summary>> findMyNewestPostList(@RequestParam(name = "postCategoryId") Long postCategoryId, @RequestParam(name = "certCategoryId", required = false) Long certCategoryId,
-                                                                             @PageableDefault(page = 0, size = 10)  Pageable pageable) {
+    @GetMapping("/me/newest")
+    public ApiResponse<PageDto<PostResponse.Summary>> findMyNewestPostList(@CurrentUser User user,
+                                                                           @RequestParam(name = "postCategoryId") Long postCategoryId, @RequestParam(name = "certCategoryId", required = false) Long certCategoryId,
+                                                                           @PageableDefault(page = 0, size = 10)  Pageable pageable) {
 
-            return ApiResponse.onSuccess(postService.findMyNewestList(postCategoryId, certCategoryId, pageable), SuccessCode.OK);
-        }
+        return ApiResponse.onSuccess(postService.findMyNewestList(user, postCategoryId, certCategoryId, pageable), SuccessCode.OK);
+    }
 
 
     /* --- 게시글 좋아요 API --- */
@@ -137,6 +138,15 @@ public class PostController {
                                                                               @PageableDefault(page = 0, size = 10)  Pageable pageable) {
 
         return ApiResponse.onSuccess(commentService.findCommentList(postId, user, pageable), SuccessCode.OK);
+    }
+
+    // 본인이 작성한 댓글 목록 조회
+    @GetMapping("/me/comments")
+    public ApiResponse<PageDto<CommentResponse.MyComment>> getMyCommentList(@CurrentUser User user,
+                                                                            @RequestParam(name = "postCategoryId") Long postCategoryId,
+                                                                              @PageableDefault(page = 0, size = 10)  Pageable pageable) {
+
+        return ApiResponse.onSuccess(commentService.findMyCommentList(user, postCategoryId, pageable), SuccessCode.OK);
     }
 
     // 댓글 수정

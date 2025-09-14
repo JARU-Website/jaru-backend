@@ -65,18 +65,17 @@ public class Post extends BaseTimeEntity {
     @OneToOne(mappedBy = "post", cascade = CascadeType.REMOVE)
     private Poll poll;
 
-    public void plusLikeCount() { this.likeCount++; }
-
-    public void minusLikeCount() {
-        if(this.likeCount > 0) this.likeCount--;
-    }
-
     // 필드 수정
     public void changeTitle(String title) { this.title = title; }
     public void changeContent(String content) { this.content = content; }
     public void changePostCategory(PostCategory postCategory) { this.postCategory = postCategory; }
     public void changeCertCategory(CertCategory certCategory) { this.certCategory = certCategory; }
     public void changeDeletedBy(User deletedBy) { this.deletedBy = deletedBy; }
+    public void plusLikeCount() { this.likeCount++; }
+    public void minusLikeCount() {
+        if(this.likeCount > 0) this.likeCount--;
+    }
+    public void plusView() { this.view++; }
 
     public void setPoll(Poll poll) {
         this.poll = poll;

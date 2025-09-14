@@ -116,6 +116,8 @@ public class PostService {
 
         Post findPost = getPostOrThrow(postId);
 
+        findPost.plusView();
+
         boolean isLiked = false;
 
         if (loginUser != null && postLikeRepository.existsByUserAndPost(loginUser, findPost)) {
@@ -131,12 +133,12 @@ public class PostService {
         return toPostDto(findPost, poll, isLiked);
     }
 
-    public PageDto<PostResponse.Summary> findMyNewestList(Long postCategoryId, Long certCategoryId, Pageable pageable) {
+    public PageDto<PostResponse.Summary> findMyNewestList(User loginUser, Long postCategoryId, Long certCategoryId, Pageable pageable) {
 
         PostCategory postCategory = (postCategoryId != null) ? getPostCategoryOrThrow(postCategoryId) : null;
         CertCategory  certCategory = (certCategoryId != null) ? getCertCategoryOrThrow(certCategoryId) : null;
 
-        Page<Post> page = postRepository.findNewest(postCategoryId, certCategoryId, pageable);
+        Page<Post> page = postRepository.findMyNewest(loginUser.getId(), postCategoryId, certCategoryId, pageable);
 
         Page<PostResponse.Summary> result = page.map(p -> {
             String postCategoryName = (postCategory != null)

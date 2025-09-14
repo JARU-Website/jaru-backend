@@ -102,6 +102,14 @@ public class CommentService {
         return PageDto.of(page);
     }
 
+    // 내 댓글 목록 조회
+    public PageDto<CommentResponse.MyComment> findMyCommentList(User loginUser, Long postCategoryId, Pageable pageable) {
+
+        Page<CommentResponse.MyComment> page = commentRepository.findMyCommentListByCategory(loginUser.getId(), postCategoryId, pageable);
+
+        return PageDto.of(page);
+    }
+
     // 댓글 수정
     @Transactional
     public void updateComment(Long commentId, User loginUser, CommentRequest.Update req) {
