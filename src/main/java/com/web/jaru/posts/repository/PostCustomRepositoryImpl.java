@@ -108,6 +108,42 @@ public class PostCustomRepositoryImpl implements PostCustomRepository{
                 .fetch();
     }
 
+    @Override
+    public Page<Post> findMyNewest(Long userId, Long postCategoryId, Long certCategoryId, Pageable pageable) {
+        // 게시글 목록 (작성자 = userId)
+        List<Post> postList = queryFactory
+                .selectFrom(post)
+                .leftJoin(post.writer, user).fetchJoin()
+                .where(
+                        notDeleted(),
+                        post.writer.id.eq(userId),                          // 작성자 필수 조건
+                        eqIfPresent(post.postCategory.id, postCategoryId),  // 선택 필터
+                        eqIfPresent(post.certCategory.id, certCategoryId)   // 선택 필터
+                )
+                .orderBy(
+                        post.createdDate.desc(), // 1차: 최신순
+                        post.id.desc(),
+                        post.likeCount.desc()    // 2차: 추천순
+                )
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        // 총 개수
+        Long total = queryFactory
+                .select(post.count())
+                .from(post)
+                .where(
+                        notDeleted(),
+                        post.writer.id.eq(userId),                          // 작성자 필수 조건
+                        eqIfPresent(post.postCategory.id, postCategoryId),
+                        eqIfPresent(post.certCategory.id, certCategoryId)
+                )
+                .fetchOne();
+
+        return new PageImpl<>(postList, pageable, total == null ? 0L : total);
+    }
+
     // 구현 예정
     @Override
     public List<Post> findBySearchWord(String word) {

@@ -36,9 +36,8 @@ public class PostService {
 
     // 게시글 생성
     @Transactional
-    public Long createPost(Long loginUserId, PostRequest.Create req) {
+    public Long createPost(User loginUser, PostRequest.Create req) {
 
-        User findUser = getUserOrThrow(loginUserId);
         // 필수 : 게시글 카테고리
         PostCategory findPostCategory = getPostCategoryOrThrow(req.postCategoryId());
 
@@ -51,7 +50,7 @@ public class PostService {
         Post post = Post.builder()
                 .title(req.title())
                 .content(req.content())
-                .writer(findUser)
+                .writer(loginUser)
                 .postCategory(findPostCategory)
                 .certCategory(findCertCategory)
                 .build();
@@ -67,7 +66,7 @@ public class PostService {
     }
 
     // 게시글 목록 조회 (최신순)
-    public PageDto<PostResponse.Summary> findNewest(Long postCategoryId, Long certCategoryId, Pageable pageable) {
+    public PageDto<PostResponse.Summary> findNewestList(Long postCategoryId, Long certCategoryId, Pageable pageable) {
 
         PostCategory postCategory = (postCategoryId != null) ? getPostCategoryOrThrow(postCategoryId) : null;
         CertCategory  certCategory = (certCategoryId != null) ? getCertCategoryOrThrow(certCategoryId) : null;
@@ -90,7 +89,7 @@ public class PostService {
     }
 
     // 게시글 목록 조회 (추천순)
-    public PageDto<PostResponse.Summary> findMostLiked(Long postCategoryId, Long certCategoryId, Pageable pageable) {
+    public PageDto<PostResponse.Summary> findMostLikedList(Long postCategoryId, Long certCategoryId, Pageable pageable) {
 
         PostCategory postCategory = (postCategoryId != null) ? getPostCategoryOrThrow(postCategoryId) : null;
         CertCategory  certCategory = (certCategoryId != null) ? getCertCategoryOrThrow(certCategoryId) : null;
@@ -117,6 +116,8 @@ public class PostService {
 
         Post findPost = getPostOrThrow(postId);
 
+        findPost.plusView();
+
         boolean isLiked = false;
 
         if (loginUser != null && postLikeRepository.existsByUserAndPost(loginUser, findPost)) {
@@ -132,15 +133,36 @@ public class PostService {
         return toPostDto(findPost, poll, isLiked);
     }
 
+    public PageDto<PostResponse.Summary> findMyNewestList(User loginUser, Long postCategoryId, Long certCategoryId, Pageable pageable) {
+
+        PostCategory postCategory = (postCategoryId != null) ? getPostCategoryOrThrow(postCategoryId) : null;
+        CertCategory  certCategory = (certCategoryId != null) ? getCertCategoryOrThrow(certCategoryId) : null;
+
+        Page<Post> page = postRepository.findMyNewest(loginUser.getId(), postCategoryId, certCategoryId, pageable);
+
+        Page<PostResponse.Summary> result = page.map(p -> {
+            String postCategoryName = (postCategory != null)
+                    ? postCategory.getName()
+                    : (p.getPostCategory() != null ? p.getPostCategory().getName() : null);
+
+            String certCategoryName = (certCategory != null)
+                    ? certCategory.getName()
+                    : (p.getCertCategory() != null ? p.getCertCategory().getName() : null);
+
+            return toSummaryDto(p, postCategoryName, certCategoryName);
+        });
+
+        return PageDto.of(result);
+    }
+
     // 게시글 수정
     @Transactional
-    public void editPost(Long postId, Long loginUserId, PostRequest.PatchUpdate req) {
+    public void editPost(Long postId, User loginUser, PostRequest.PatchUpdate req) {
 
         Post findPost = getPostOrThrow(postId);
-        User findUser = getUserOrThrow(loginUserId);
 
         // 권한 확인
-        checkEditPost(findUser, findPost);
+        checkEditPost(loginUser, findPost);
 
         // 최소 1개 이상 변경값 확인
         if (req.title() == null && req.content() == null
@@ -167,15 +189,14 @@ public class PostService {
 
     // 게시글 삭제
     @Transactional
-    public void deletePost(Long postId, Long loginUserId) {
+    public void deletePost(Long postId, User loginUser) {
 
         Post findPost = getPostOrThrow(postId);
-        User findUser = getUserOrThrow(loginUserId);
 
         // 권한 확인
-        checkEditPost(findUser, findPost);
+        checkEditPost(loginUser, findPost);
 
-        findPost.changeDeletedBy(findUser);
+        findPost.changeDeletedBy(loginUser);
         findPost.softDelete();
     }
 
@@ -194,18 +215,17 @@ public class PostService {
 
     // 게시글 좋아요
     @Transactional
-    public void savePostLike(Long postId, Long loginUserId) {
+    public void savePostLike(Long postId, User loginUser) {
 
         Post findPost = getPostOrThrow(postId);
-        User findUser = getUserOrThrow(loginUserId);
 
         // Column unique 제약조건 핸들링 (중복 컬럼 검증)
-        if (postLikeRepository.existsByUserAndPost(findUser, findPost)) {
+        if (postLikeRepository.existsByUserAndPost(loginUser, findPost)) {
             throw new CustomException(ErrorCode.EXIST_POST_LIKE);
         }
 
         PostLike postLike = PostLike.builder()
-                .user(findUser)
+                .user(loginUser)
                 .post(findPost)
                 .build();
 
@@ -216,22 +236,16 @@ public class PostService {
 
     // 게시글 좋아요 취소
     @Transactional
-    public void deletePostLike(Long postId, Long loginUserId) {
-
-        User findUser = getUserOrThrow(loginUserId);
+    public void deletePostLike(Long postId, User loginUser) {
 
         Post findPost = getPostOrThrow(postId);
 
-        postLikeRepository.deleteByUserAndPost(findUser, findPost);
+        postLikeRepository.deleteByUserAndPost(loginUser, findPost);
 
         findPost.minusLikeCount();
     }
 
     /* --- 예외 처리 --- */
-    private User getUserOrThrow(Long loginUserId) {
-        return userRepository.findById(loginUserId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
-    }
 
     private PostCategory getPostCategoryOrThrow(Long postCategoryId) {
         return postCategoryRepository.findById(postCategoryId)
@@ -261,6 +275,7 @@ public class PostService {
     }
 
     /* --- 엔티티 → 응답 DTO 매핑 --- */
+
     private PostResponse.Summary toSummaryDto(Post post, String postCategoryName, String certCategoryName) {
         return new PostResponse.Summary(
                 post.getId(),
@@ -280,6 +295,8 @@ public class PostService {
                 post.getId(),
                 post.getTitle(),
                 post.getContent(),
+                post.getPostCategory().getId(),
+                post.getCertCategory().getId(),
                 post.getPostCategory().getName(),
                 post.getCertCategory().getName(),
                 isLiked,
@@ -291,5 +308,4 @@ public class PostService {
                 post.getCreatedDate()
         );
     }
-
 }

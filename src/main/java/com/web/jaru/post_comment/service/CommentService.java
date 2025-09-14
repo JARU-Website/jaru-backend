@@ -38,13 +38,11 @@ public class CommentService {
 
     // 댓글 생성
     @Transactional
-    public Long createComment(Long postId, Long loginUserId, CommentRequest.Create req) {
+    public Long createComment(Long postId, User loginUser, CommentRequest.Create req) {
 
         Post findPost = getPostOrThrow(postId);
 
         Comment parent = null;
-
-        User findUser = getUserOrThrow(loginUserId);
 
         // 대댓글
         if (req.parentId() != null) {
@@ -58,7 +56,7 @@ public class CommentService {
 
         Comment comment = Comment.builder()
                 .post(findPost)
-                .writer(findUser)
+                .writer(loginUser)
                 .parent(parent)
                 .content(req.content())
                 .build();
@@ -104,16 +102,22 @@ public class CommentService {
         return PageDto.of(page);
     }
 
+    // 내 댓글 목록 조회
+    public PageDto<CommentResponse.MyComment> findMyCommentList(User loginUser, Long postCategoryId, Pageable pageable) {
+
+        Page<CommentResponse.MyComment> page = commentRepository.findMyCommentListByCategory(loginUser.getId(), postCategoryId, pageable);
+
+        return PageDto.of(page);
+    }
+
     // 댓글 수정
     @Transactional
-    public void updateComment(Long commentId, Long loginUserId, CommentRequest.Update req) {
-
-        User findUser = getUserOrThrow(loginUserId);
+    public void updateComment(Long commentId, User loginUser, CommentRequest.Update req) {
 
         Comment findComment = getCommentOrThrow(commentId);
 
         // 권한 확인
-        checkEditComment(findUser, findComment);
+        checkEditComment(loginUser, findComment);
         // 삭제 여부
         checkDeletedComment(findComment);
 
@@ -122,14 +126,12 @@ public class CommentService {
 
     // 댓글 삭제
     @Transactional
-    public void deleteComment(Long commentId, Long loginUserId) {
-
-        User findUser = getUserOrThrow(loginUserId);
+    public void deleteComment(Long commentId, User loginUser) {
 
         Comment findComment = getCommentOrThrow(commentId);
 
         // 권한 확인
-        checkEditComment(findUser, findComment);
+        checkEditComment(loginUser, findComment);
         // 삭제 여부
         checkDeletedComment(findComment);
 
@@ -143,19 +145,17 @@ public class CommentService {
 
     // 댓글 좋아요
     @Transactional
-    public void saveCommentLike(Long commentId, Long loginUserId) {
+    public void saveCommentLike(Long commentId, User loginUser) {
 
         Comment findComment = getCommentOrThrow(commentId);
 
-        User findUser = getUserOrThrow(loginUserId);
-
         // Column unique 제약조건 핸들링 (중복 컬럼 검증)
-        if (commentLikeRepository.existsByUserAndComment(findUser, findComment)) {
+        if (commentLikeRepository.existsByUserAndComment(loginUser, findComment)) {
             throw new CustomException(ErrorCode.EXIST_POST_LIKE);
         }
 
         CommentLike commentLike = CommentLike.builder()
-                .user(findUser)
+                .user(loginUser)
                 .comment(findComment)
                 .build();
 
@@ -166,26 +166,20 @@ public class CommentService {
 
     // 댓글 좋아요 취소
     @Transactional
-    public void deleteCommentLike(Long commentId, Long loginUserId) {
-
-        User findUser = getUserOrThrow(loginUserId);
+    public void deleteCommentLike(Long commentId, User loginUser) {
 
         Comment findComment = getCommentOrThrow(commentId);
 
-        commentLikeRepository.deleteByUserAndComment(findUser, findComment);
+        commentLikeRepository.deleteByUserAndComment(loginUser, findComment);
 
         findComment.minusLikeCount();
     }
 
+    /* --- 예외 처리 --- */
+
     private Comment getCommentOrThrow(Long commentId) {
         return commentRepository.findById(commentId)
                 .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
-    }
-
-    /* --- 예외 처리 --- */
-    private User getUserOrThrow(Long loginUserId) {
-        return userRepository.findById(loginUserId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
     }
 
     private Post getPostOrThrow(Long postId) {

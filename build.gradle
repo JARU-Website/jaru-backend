@@ -63,22 +63,23 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 }
 
-def querydslDir = "$buildDir/generated/sources/annotationProcessor/java/main"
-
 sourceSets {
 	main {
 		java {
-			srcDirs = ["$projectDir/src/main/java", querydslDir]
+			srcDirs = ["$projectDir/src/main/java", "$projectDir/build/generated"]
 		}
 	}
 }
 
-tasks.withType(JavaCompile) {
-	options.annotationProcessorGeneratedSourcesDirectory = file(querydslDir)
-}
+// QueryDSL 설정
+def querydslSrcDir = 'src/main/generated'
 
+tasks.withType(JavaCompile) {
+	options.generatedSourceOutputDirectory = file(querydslSrcDir)
+}
 
 
 tasks.named('test') {
 	useJUnitPlatform()
 }
+

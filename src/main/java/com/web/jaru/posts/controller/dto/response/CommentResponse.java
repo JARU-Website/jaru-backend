@@ -28,4 +28,14 @@ public final class CommentResponse {
             Comment root,
             List<Comment> replies
     ) { }
+
+    public record MyComment(
+            Long commentId,
+            Long postId,
+            String content,
+            String postCategoryName,
+            String postTitle,
+            int commentCount,
+            LocalDateTime createdDate
+    ) { }
 }
