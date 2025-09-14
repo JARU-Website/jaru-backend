@@ -143,7 +143,7 @@ public class CommentService {
 
         // Column unique 제약조건 핸들링 (중복 컬럼 검증)
         if (commentLikeRepository.existsByUserAndComment(loginUser, findComment)) {
-            throw new CustomException(ErrorCode.EXIST_POST_LIKE);
+            throw new CustomException(ErrorCode.EXIST_COMMENT_LIKE);
         }
 
         CommentLike commentLike = CommentLike.builder()
@@ -161,6 +161,10 @@ public class CommentService {
     public void deleteCommentLike(Long commentId, User loginUser) {
 
         Comment findComment = getCommentOrThrow(commentId);
+
+        if (!commentLikeRepository.existsByUserAndComment(loginUser, findComment)) {
+            throw new CustomException(ErrorCode.COMMENT_LIKE_NOT_FOUND);
+        }
 
         commentLikeRepository.deleteByUserAndComment(loginUser, findComment);
 

@@ -30,6 +30,8 @@ public enum ErrorCode implements BaseCode {
     PERMISSION_DENIED(HttpStatus.UNAUTHORIZED, "POST401","권한이 없습니다."),
     EXIST_POST_LIKE(HttpStatus.CONFLICT, "POST409", "이미 존재하는 좋아요 정보입니다."),
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "COMMENT404", "존재하지 않는 댓글입니다."),
+    COMMENT_LIKE_NOT_FOUND(HttpStatus.NOT_FOUND, "COMMENT404", "존재하지 않는 댓글 좋아요 정보입니다."),
+    EXIST_COMMENT_LIKE(HttpStatus.CONFLICT, "COMMENT409", "이미 존재하는 댓글 좋아요 정보입니다."),
     COMMENT_BAD_REQUEST(HttpStatus.BAD_REQUEST, "COMMENT400", "유효하지 않은 댓글입니다."),
     EXIST_POLL_BY_POST(HttpStatus.CONFLICT, "POLL409", "이미 존재하는 투표입니다."),
     POLL_NOT_FOUND(HttpStatus.NOT_FOUND, "POLL404", "해당 투표를 찾을 수 없습니다."),
