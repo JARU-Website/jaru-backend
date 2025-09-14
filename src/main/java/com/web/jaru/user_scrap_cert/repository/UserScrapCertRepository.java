@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface UserScrapCertRepository extends JpaRepository<UserScrapCert, Long> {
+public interface UserScrapCertRepository extends JpaRepository<UserScrapCert, Long>, UserScrapCertCustomRepository {
 
     boolean existsByUserAndCertification(User user, Certification certification);
     void deleteByUserAndCertification(User user, Certification certification);
