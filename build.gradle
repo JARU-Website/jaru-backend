@@ -32,8 +32,13 @@ dependencies {
     runtimeOnly 'com.mysql:mysql-connector-j'
 
     // HttpClient 5
-    implementation 'org.apache.httpcomponents.client5:httpclient5:5.3.4'
-    implementation 'org.apache.httpcomponents.core5:httpcore5:5.3.4'
+    // ✅ Apache HttpComponents 5.x — 버전 명시 제거(부트 BOM에 맡김)
+    implementation('org.apache.httpcomponents.client5:httpclient5') {
+        // HTTP/2 코어 모듈이 버전 충돌의 주범일 수 있어 우선 제외
+        exclude group: 'org.apache.httpcomponents.core5', module: 'httpcore5-h2'
+    }
+    // 코어는 명시 추가 (BOM이 버전 맞춰줌)
+    implementation 'org.apache.httpcomponents.core5:httpcore5'
 
     // Querydsl
     implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
