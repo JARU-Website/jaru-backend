@@ -33,7 +33,7 @@ dependencies {
 
     // ✅ Spring 쪽에서 사용할 Apache HttpClient 5 (버전 명시 X → BOM 관리)
     implementation 'org.apache.httpcomponents.client5:httpclient5'
-    implementation 'org.apache.httpcomponents.core5'
+    implementation 'org.apache.httpcomponents.core5:httpcore5'
 
     // Querydsl
     implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
