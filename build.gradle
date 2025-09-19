@@ -8,14 +8,10 @@ group = 'com.web'
 version = '0.0.1-SNAPSHOT'
 
 java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
-    }
+    toolchain { languageVersion = JavaLanguageVersion.of(17) }
 }
 
-repositories {
-    mavenCentral()
-}
+repositories { mavenCentral() }
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -35,9 +31,9 @@ dependencies {
     // mysql
     runtimeOnly 'com.mysql:mysql-connector-j'
 
-    // HttpClient5 (버전 고정)
-    implementation 'org.apache.httpcomponents.client5:httpclient5:5.3.1'
-    implementation 'org.apache.httpcomponents.core5:httpcore5:5.3.1'
+    // ✅ Spring 쪽에서 사용할 Apache HttpClient 5 (버전 명시 X → BOM 관리)
+    implementation 'org.apache.httpcomponents.client5:httpclient5'
+    implementation 'org.apache.httpcomponents.core5:httpcore5'
 
     // Querydsl
     implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
@@ -81,14 +77,13 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
+/* ❌ 제거 (전역 exclude/force는 충돌 원인)
 configurations.all {
-    // HC4(4.x)만 전역 배제 — HC5는 유지
     exclude group: 'org.apache.httpcomponents', module: 'httpclient'
     exclude group: 'org.apache.httpcomponents', module: 'httpcore'
-
-    // 다른 라이브러리가 낮은 버전을 강제할 때 대비해 HC5 버전 고정
     resolutionStrategy {
         force 'org.apache.httpcomponents.client5:httpclient5:5.3.1',
               'org.apache.httpcomponents.core5:httpcore5:5.3.1'
     }
 }
+*/
