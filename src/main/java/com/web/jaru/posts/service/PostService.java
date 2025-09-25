@@ -5,7 +5,8 @@ import com.web.jaru.certifications.repository.CertCategoryRepository;
 import com.web.jaru.common.dto.response.PageDto;
 import com.web.jaru.common.exception.CustomException;
 import com.web.jaru.common.response.ErrorCode;
-import com.web.jaru.post_poll.dto.request.PollRequest;
+import com.web.jaru.post_like.domain.PostLike;
+import com.web.jaru.post_like.repository.PostLikeRepository;
 import com.web.jaru.post_poll.service.PollService;
 import com.web.jaru.posts.controller.dto.request.PostRequest;
 import com.web.jaru.posts.controller.dto.response.PostResponse;
@@ -14,6 +15,7 @@ import com.web.jaru.posts.domain.PostCategory;
 import com.web.jaru.posts.repository.PostCategoryRepository;
 import com.web.jaru.posts.repository.PostRepository;
 import com.web.jaru.users.domain.User;
+import com.web.jaru.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +30,8 @@ public class PostService {
     private final PostRepository postRepository;
     private final PostCategoryRepository postCategoryRepository;
     private final CertCategoryRepository certCategoryRepository;
+    private final UserRepository userRepository;
+    private final PostLikeRepository postLikeRepository;
     private final PollService pollService;
 
     // 게시글 생성
@@ -54,17 +58,15 @@ public class PostService {
         Long savedPostId = postRepository.save(post).getId();
 
         // 투표 생성
-        PollRequest.Create pollReq = req.poll();
-
-        if (pollReq != null) {
-            pollService.createPoll(savedPostId, pollReq);
+        if (req.poll() != null) {
+            pollService.createPoll(savedPostId, req.poll());
         }
 
         return savedPostId;
     }
 
     // 게시글 목록 조회 (최신순)
-    public PageDto<PostResponse.Summary> findNewest(Long postCategoryId, Long certCategoryId, Pageable pageable) {
+    public PageDto<PostResponse.Summary> findNewestList(Long postCategoryId, Long certCategoryId, Pageable pageable) {
 
         PostCategory postCategory = (postCategoryId != null) ? getPostCategoryOrThrow(postCategoryId) : null;
         CertCategory  certCategory = (certCategoryId != null) ? getCertCategoryOrThrow(certCategoryId) : null;
@@ -86,9 +88,8 @@ public class PostService {
         return PageDto.of(result);
     }
 
-
     // 게시글 목록 조회 (추천순)
-    public PageDto<PostResponse.Summary> findMostLiked(Long postCategoryId, Long certCategoryId, Pageable pageable) {
+    public PageDto<PostResponse.Summary> findMostLikedList(Long postCategoryId, Long certCategoryId, Pageable pageable) {
 
         PostCategory postCategory = (postCategoryId != null) ? getPostCategoryOrThrow(postCategoryId) : null;
         CertCategory  certCategory = (certCategoryId != null) ? getCertCategoryOrThrow(certCategoryId) : null;
@@ -113,19 +114,31 @@ public class PostService {
     // 게시글 상세 조회
     public PostResponse.Post findPost(Long postId, User loginUser) {
 
-        Post post = getPostOrThrow(postId);
+        Post findPost = getPostOrThrow(postId);
 
-        return toPostDto(post);
+        boolean isLiked = false;
+
+        if (loginUser != null && postLikeRepository.existsByUserAndPost(loginUser, findPost)) {
+            isLiked = true;
+        }
+
+        PostResponse.Poll poll = null;
+
+        if (findPost.getPoll() != null) {
+            poll = pollService.findPoll(findPost, loginUser);
+        }
+
+        return toPostDto(findPost, poll, isLiked);
     }
 
     // 게시글 수정
     @Transactional
     public void editPost(Long postId, User loginUser, PostRequest.PatchUpdate req) {
 
-        Post post = getPostOrThrow(postId);
+        Post findPost = getPostOrThrow(postId);
 
         // 권한 확인
-        checkEditPost(loginUser, post);
+        checkEditPost(loginUser, findPost);
 
         // 최소 1개 이상 변경값 확인
         if (req.title() == null && req.content() == null
@@ -135,18 +148,18 @@ public class PostService {
 
         // 들어온 필드만 적용
         if (req.title() != null) {
-            post.changeTitle(req.title());
+            findPost.changeTitle(req.title());
         }
         if (req.content() != null) {
-            post.changeContent(req.content());
+            findPost.changeContent(req.content());
         }
         if (req.postCategoryId() != null) {
             PostCategory postCategory = getPostCategoryOrThrow(req.postCategoryId());
-            post.changePostCategory(postCategory);
+            findPost.changePostCategory(postCategory);
         }
         if (req.certCategoryId() != null) {
             CertCategory certCategory = getCertCategoryOrThrow(req.certCategoryId());
-            post.changeCertCategory(certCategory);
+            findPost.changeCertCategory(certCategory);
         }
     }
 
@@ -154,29 +167,62 @@ public class PostService {
     @Transactional
     public void deletePost(Long postId, User loginUser) {
 
-        Post post = getPostOrThrow(postId);
+        Post findPost = getPostOrThrow(postId);
 
         // 권한 확인
-        checkEditPost(loginUser, post);
+        checkEditPost(loginUser, findPost);
 
-        post.changeDeletedBy(loginUser);
-        post.softDelete();
+        findPost.changeDeletedBy(loginUser);
+        findPost.softDelete();
     }
 
     // 게시글 삭제 - 관리자
     @Transactional
     public void deletePostByAdmin(Long postId, User loginUser) {
 
-        Post post = getPostOrThrow(postId);
+        Post findPost = getPostOrThrow(postId);
 
         // 관리자 권한 확인
         checkIsAdmin(loginUser);
 
-        post.changeDeletedBy(loginUser);
-        post.softDelete();
+        findPost.changeDeletedBy(loginUser);
+        findPost.softDelete();
+    }
+
+    // 게시글 좋아요
+    @Transactional
+    public void savePostLike(Long postId, User loginUser) {
+
+        Post findPost = getPostOrThrow(postId);
+
+        // Column unique 제약조건 핸들링 (중복 컬럼 검증)
+        if (postLikeRepository.existsByUserAndPost(loginUser, findPost)) {
+            throw new CustomException(ErrorCode.EXIST_POST_LIKE);
+        }
+
+        PostLike postLike = PostLike.builder()
+                .user(loginUser)
+                .post(findPost)
+                .build();
+
+        postLikeRepository.save(postLike);
+
+        findPost.plusLikeCount();
+    }
+
+    // 게시글 좋아요 취소
+    @Transactional
+    public void deletePostLike(Long postId, User loginUser) {
+
+        Post findPost = getPostOrThrow(postId);
+
+        postLikeRepository.deleteByUserAndPost(loginUser, findPost);
+
+        findPost.minusLikeCount();
     }
 
     /* --- 예외 처리 --- */
+
     private PostCategory getPostCategoryOrThrow(Long postCategoryId) {
         return postCategoryRepository.findById(postCategoryId)
                 .orElseThrow(() -> new CustomException(ErrorCode.POST_CATEGORY_NOT_FOUND));
@@ -219,17 +265,19 @@ public class PostService {
         );
     }
 
-    private PostResponse.Post toPostDto(Post post) {
+    private PostResponse.Post toPostDto(Post post, PostResponse.Poll poll, boolean isLiked) {
         return new PostResponse.Post(
                 post.getId(),
                 post.getTitle(),
                 post.getContent(),
                 post.getPostCategory().getName(),
                 post.getCertCategory().getName(),
+                isLiked,
                 post.getLikeCount(),
                 post.getView(),
                 post.getCommentCount(),
                 post.getWriter().getNickname(),
+                poll,
                 post.getCreatedDate()
         );
     }

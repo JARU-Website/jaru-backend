@@ -5,6 +5,7 @@ import com.web.jaru.common.response.ApiResponse;
 import com.web.jaru.common.response.SuccessCode;
 import com.web.jaru.security.oauth.OAuthService;
 import com.web.jaru.security.service.CustomUserDetails;
+import com.web.jaru.users.domain.User;
 import com.web.jaru.users.dto.UserDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -53,8 +54,8 @@ public class AuthController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "로그아웃 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "UNAUTHORIZED_USER - 인증되지 않은 사용자")
     })
-    public ApiResponse<Void> logout(HttpServletResponse response, @CurrentUser CustomUserDetails userDetails) {
-        authService.logout(userDetails.getUser().getId(), response);
+    public ApiResponse<Void> logout(HttpServletResponse response, @CurrentUser User user) {
+        authService.logout(user.getId(), response);
         return ApiResponse.onSuccess(null, SuccessCode.OK);
     }
 

@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.annotations.SoftDelete;
 
 @Entity
 @Getter
@@ -20,6 +21,7 @@ import org.hibernate.annotations.OnDeleteAction;
         name = "user_cert_unique",
         columnNames = {"user_id", "certification_id"}
 )})
+@SoftDelete(columnName = "is_deleted")
 public class UserScrapCert extends BaseTimeEntity {
 
     @Id

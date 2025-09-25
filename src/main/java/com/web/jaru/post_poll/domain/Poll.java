@@ -24,6 +24,7 @@ public class Poll extends BaseTimeEntity {
     @Column(name = "poll_id")
     private Long id;
 
+    @Column(nullable = false, length = 100)
     private String title;
 
     @Builder.Default
@@ -31,7 +32,7 @@ public class Poll extends BaseTimeEntity {
 
     private boolean allowMultiple; // 중복 투표 혀용
 
-    @OneToOne(fetch = FetchType.LAZY) // 게시글당 투표 1개라면
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="post_id", nullable=false, unique=true)
     private Post post;
 
@@ -41,11 +42,15 @@ public class Poll extends BaseTimeEntity {
     private List<PollOption> options = new ArrayList<>();
 
     /* --- 연관관계 메서드 --- */
-    public void setPost(Post post) { this.post = post; }
-
-    public void addOption(PollOption option) {
-        options.add(option);
-        option.setPoll(this);
+    public void setPost(Post post) {
+        this.post = post;
+        post.setPoll(this);
     }
 
+    /* --- 필드 수정 --- */
+    public void changeTitle(String title) { this.title = title; }
+    public void plusTotalVoteCount() { this.totalVoteCount++; }
+    public void minusTotalVoteCount() {
+        if (this.totalVoteCount > 0) this.totalVoteCount--;
+    }
 }

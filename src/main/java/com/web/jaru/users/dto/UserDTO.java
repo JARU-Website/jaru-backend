@@ -21,7 +21,7 @@ public class UserDTO {
     ) {
         public static UserResponseDTO from(User user) {
             return UserResponseDTO.builder()
-                    .id(user.getId())
+                    .id(user.getId( ))
                     .email(user.getEmail())
                     .nickname(user.getNickname())
                     .build();

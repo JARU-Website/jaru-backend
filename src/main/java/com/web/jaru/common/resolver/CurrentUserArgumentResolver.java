@@ -4,6 +4,7 @@ import com.web.jaru.common.annotation.CurrentUser;
 import com.web.jaru.common.exception.CustomException;
 import com.web.jaru.common.response.ErrorCode;
 import com.web.jaru.security.service.CustomUserDetails;
+import com.web.jaru.users.domain.User;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,8 +19,9 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
+        // @CurrentUser + 파라미터 타입이 User일 때만 동작
         return parameter.hasParameterAnnotation(CurrentUser.class)
-                && parameter.getParameterType().equals(CustomUserDetails.class);
+                && parameter.getParameterType().equals(User.class);
     }
 
     @Override
@@ -29,12 +31,13 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
                                   WebDataBinderFactory binderFactory) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication == null || !authentication.isAuthenticated()) {
+        if (authentication == null || !authentication.isAuthenticated()
+                || authentication.getPrincipal().equals("anonymousUser")) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_USER);
         }
 
-        return (CustomUserDetails) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        return userDetails.getUser(); // User 엔티티 직접 리턴
     }
-
 }
 

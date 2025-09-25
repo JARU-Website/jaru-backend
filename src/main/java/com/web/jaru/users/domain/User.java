@@ -3,6 +3,8 @@ package com.web.jaru.users.domain;
 import com.web.jaru.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -39,10 +41,21 @@ public class User extends BaseTimeEntity {
     @Column(length = 30)
     private String authProvider;
 
+    @Builder.Default
     @Column(name = "is_deleted")
     private Boolean isDeleted = false;
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
+
+    @Builder.Default
+    @Column(name = "is_notified")
+    private Boolean isNotified = false;
+
+
+    @Builder.Default
+    @Column(name = "is_google_cal_connected")
+    private Boolean isGoogleCalConnected = false;
+
 
 }
