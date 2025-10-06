@@ -40,6 +40,13 @@ public class PostController {
         return ApiResponse.onSuccess(postId, SuccessCode.POST_SAVED);
     }
 
+    // 게시글 카테고리 조회
+//    @GetMapping("/category")
+//    public ApiResponse<PageDto<PostResponse.>> findPostCategoryList() {
+//
+//        return ApiResponse.onSuccess(postService.findPostCategoryList(), SuccessCode.OK);
+//    }
+
     // 게시글 목록 조회 (최신순)
     @GetMapping("/list/newest")
     public ApiResponse<PageDto<PostResponse.Summary>> findNewestPostList(@RequestParam(name = "postCategoryId") Long postCategoryId, @RequestParam(name = "certCategoryId", required = false) Long certCategoryId,
