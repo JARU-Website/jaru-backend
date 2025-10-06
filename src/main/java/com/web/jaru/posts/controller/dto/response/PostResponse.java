@@ -20,6 +20,14 @@ public final class PostResponse {
             LocalDateTime createdDate
     ) { }
 
+    // 게시글 카테고리 목록
+    public record Category(
+            Long id,
+            String name
+    ) { }
+
+    //
+
     // 게시글 상세
     public record Post(
             Long postId,
